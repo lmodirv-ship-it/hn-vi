@@ -19,6 +19,9 @@ export async function getFFmpeg(): Promise<FFmpeg> {
   return ffmpeg;
 }
 
+export type VideoQuality = "low" | "medium" | "high" | "ultra";
+export type VideoFormat = "mp4" | "webm";
+
 export interface ExportOptions {
   width: number;
   height: number;
@@ -26,9 +29,24 @@ export interface ExportOptions {
   label: string;
 }
 
+export interface AdvancedExportOptions extends ExportOptions {
+  quality: VideoQuality;
+  format: VideoFormat;
+}
+
+/** Quality-dependent FFmpeg encoding parameters */
+const QUALITY_SETTINGS: Record<VideoQuality, { crf: number; preset: string; bitrate: string }> = {
+  low:    { crf: 28, preset: "ultrafast", bitrate: "1M" },
+  medium: { crf: 23, preset: "fast",      bitrate: "2.5M" },
+  high:   { crf: 18, preset: "medium",    bitrate: "5M" },
+  ultra:  { crf: 15, preset: "slow",      bitrate: "10M" },
+};
+
 export const EXPORT_PRESETS: Record<string, ExportOptions> = {
-  "720p": { width: 1280, height: 720, fps: 30, label: "HD 720p" },
+  "720p":  { width: 1280, height: 720,  fps: 30, label: "HD 720p" },
   "1080p": { width: 1920, height: 1080, fps: 30, label: "Full HD 1080p" },
+  "1080p60": { width: 1920, height: 1080, fps: 60, label: "Full HD 1080p 60fps" },
+  "4k":    { width: 3840, height: 2160, fps: 30, label: "4K Ultra HD" },
 };
 
 export interface SceneData {
@@ -41,13 +59,16 @@ export interface SceneData {
 }
 
 /**
- * Renders scenes to individual frame images on a canvas, 
- * then encodes them into an MP4 using FFmpeg.wasm
+ * Renders scenes to individual frame images on a canvas,
+ * then encodes them into a video using FFmpeg.wasm.
+ * Supports quality tiers, 60fps, 4K, and mp4/webm output.
  */
 export async function exportVideo(
   scenes: SceneData[],
   preset: ExportOptions,
-  onProgress: (progress: number, status: string) => void
+  onProgress: (progress: number, status: string) => void,
+  quality: VideoQuality = "high",
+  format: VideoFormat = "mp4"
 ): Promise<string> {
   onProgress(0, "جاري تحميل محرك الفيديو...");
   const ffmpeg = await getFFmpeg();
@@ -58,16 +79,18 @@ export async function exportVideo(
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
-  // Calculate total frames
+  // Enable high-quality rendering
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+
   const totalDuration = scenes.reduce((acc, s) => acc + s.duration, 0);
-  const totalFrames = totalDuration * fps;
+  const totalFrames = Math.ceil(totalDuration * fps);
 
   onProgress(5, "جاري إنشاء الإطارات...");
 
-  // Render each frame
   let frameIndex = 0;
   for (const scene of scenes) {
-    const sceneFrames = scene.duration * fps;
+    const sceneFrames = Math.ceil(scene.duration * fps);
 
     for (let f = 0; f < sceneFrames; f++) {
       const progress = frameIndex / totalFrames;
@@ -76,7 +99,7 @@ export async function exportVideo(
       ctx.fillStyle = scene.bgColor;
       ctx.fillRect(0, 0, width, height);
 
-      // Draw subtle radial gradient overlay
+      // Radial gradient overlay
       const gradient = ctx.createRadialGradient(
         width * 0.3, height * 0.4, 0,
         width * 0.3, height * 0.4, width * 0.7
@@ -86,19 +109,17 @@ export async function exportVideo(
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
-      // Calculate text animation
+      // Text animation
       let textOpacity = 1;
       let textY = height / 2;
       const fadeFrames = Math.min(fps * 0.5, sceneFrames * 0.2);
 
-      // Fade in
       if (f < fadeFrames) {
         textOpacity = f / fadeFrames;
         if (scene.transition === "slide") {
           textY = height / 2 + 40 * (1 - f / fadeFrames);
         }
       }
-      // Fade out
       if (f > sceneFrames - fadeFrames) {
         textOpacity = (sceneFrames - f) / fadeFrames;
       }
@@ -112,6 +133,11 @@ export async function exportVideo(
 
       const fontSize = Math.round(width * 0.04);
       ctx.font = `bold ${fontSize}px 'Space Grotesk', sans-serif`;
+
+      // Text shadow for depth
+      ctx.shadowColor = "rgba(0,0,0,0.4)";
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 3;
 
       // Word wrap
       const maxWidth = width * 0.7;
@@ -133,18 +159,13 @@ export async function exportVideo(
       const lineHeight = fontSize * 1.4;
       const startY = textY - ((lines.length - 1) * lineHeight) / 2;
 
-      // Text shadow
-      ctx.shadowColor = "rgba(0,0,0,0.3)";
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 2;
-
       lines.forEach((line, i) => {
         ctx.fillText(line, width / 2, startY + i * lineHeight);
       });
 
       ctx.restore();
 
-      // Convert canvas to PNG and write to FFmpeg FS
+      // Write frame to FFmpeg FS
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob((b) => resolve(b!), "image/png");
       });
@@ -154,7 +175,6 @@ export async function exportVideo(
 
       frameIndex++;
 
-      // Update progress every 10 frames
       if (frameIndex % 10 === 0) {
         onProgress(5 + progress * 70, `جاري إنشاء الإطارات... ${Math.round(progress * 100)}%`);
       }
@@ -163,35 +183,52 @@ export async function exportVideo(
 
   onProgress(75, "جاري تجميع الفيديو...");
 
-  // Encode frames to MP4
-  await ffmpeg.exec([
-    "-framerate", String(fps),
-    "-i", "frame_%06d.png",
-    "-c:v", "libx264",
-    "-pix_fmt", "yuv420p",
-    "-preset", "fast",
-    "-crf", "23",
-    "output.mp4",
-  ]);
+  const qs = QUALITY_SETTINGS[quality];
+  const outputFile = `output.${format}`;
+
+  if (format === "webm") {
+    await ffmpeg.exec([
+      "-framerate", String(fps),
+      "-i", "frame_%06d.png",
+      "-c:v", "libvpx-vp9",
+      "-b:v", qs.bitrate,
+      "-crf", String(qs.crf),
+      "-pix_fmt", "yuv420p",
+      "-r", String(fps),
+      outputFile,
+    ]);
+  } else {
+    await ffmpeg.exec([
+      "-framerate", String(fps),
+      "-i", "frame_%06d.png",
+      "-c:v", "libx264",
+      "-preset", qs.preset,
+      "-crf", String(qs.crf),
+      "-b:v", qs.bitrate,
+      "-pix_fmt", "yuv420p",
+      "-movflags", "+faststart",
+      "-tune", "film",
+      "-profile:v", "high",
+      "-level", "4.2",
+      "-r", String(fps),
+      outputFile,
+    ]);
+  }
 
   onProgress(95, "جاري التحضير للتنزيل...");
 
-  // Read output
-  const data = await ffmpeg.readFile("output.mp4");
+  const data = await ffmpeg.readFile(outputFile);
   const uint8 = data instanceof Uint8Array ? data : new TextEncoder().encode(data as string);
-  const videoBlob = new Blob([new Uint8Array(uint8)], { type: "video/mp4" });
+  const mimeType = format === "webm" ? "video/webm" : "video/mp4";
+  const videoBlob = new Blob([new Uint8Array(uint8)], { type: mimeType });
   const url = URL.createObjectURL(videoBlob);
 
-  // Cleanup frames
+  // Cleanup
   for (let i = 0; i < frameIndex; i++) {
     const frameNum = String(i).padStart(6, "0");
-    try {
-      await ffmpeg.deleteFile(`frame_${frameNum}.png`);
-    } catch {}
+    try { await ffmpeg.deleteFile(`frame_${frameNum}.png`); } catch {}
   }
-  try {
-    await ffmpeg.deleteFile("output.mp4");
-  } catch {}
+  try { await ffmpeg.deleteFile(outputFile); } catch {}
 
   onProgress(100, "تم!");
   return url;
