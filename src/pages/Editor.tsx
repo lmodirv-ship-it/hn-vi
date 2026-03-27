@@ -33,6 +33,15 @@ export default function Editor() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
+  // Canvas animation controls
+  const [canvasControls, setCanvasControls] = useState<{
+    isPlaying: boolean; currentTime: number; totalDuration: number;
+    play: () => void; pause: () => void; restart: () => void; seek: (t: number) => void;
+  } | null>(null);
+
+  const handleControlsReady = useCallback((controls: any) => {
+    setCanvasControls(controls);
+  }, []);
 
   const currentScene = scenes.find((s) => s.id === activeScene) || scenes[0];
 
