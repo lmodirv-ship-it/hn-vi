@@ -1,6 +1,7 @@
 import { LayoutDashboard, Film, Palette, Settings, Play, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
   SidebarContent,
@@ -24,7 +25,13 @@ const navItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
   return (
     <Sidebar collapsible="icon" className="border-r-0">
       <SidebarHeader className="p-4">
@@ -64,7 +71,7 @@ export function AppSidebar() {
       <SidebarFooter className="p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent">
+            <SidebarMenuButton onClick={handleSignOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent">
               <LogOut className="mr-2 h-4 w-4" />
               {!collapsed && <span>تسجيل الخروج</span>}
             </SidebarMenuButton>

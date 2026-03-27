@@ -1,25 +1,39 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, Mail, Lock, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { signIn, signUp } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "قريبًا!",
-      description: "سيتم تفعيل نظام المصادقة بعد ربط Lovable Cloud",
-    });
+    setIsLoading(true);
+    try {
+      if (isSignUp) {
+        await signUp(email, password, name);
+        toast({ title: "تم إنشاء الحساب!", description: "تحقق من بريدك الإلكتروني لتأكيد الحساب" });
+      } else {
+        await signIn(email, password);
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({ title: "خطأ", description: error.message, variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,18 +70,18 @@ export default function Login() {
               <Label htmlFor="email">البريد الإلكتروني</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" />
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" required />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">كلمة المرور</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10" />
+                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10" required minLength={6} />
               </div>
             </div>
-            <Button type="submit" className="w-full gradient-primary border-0 text-primary-foreground">
-              {isSignUp ? "إنشاء الحساب" : "تسجيل الدخول"}
+            <Button type="submit" className="w-full gradient-primary border-0 text-primary-foreground" disabled={isLoading}>
+              {isLoading ? "جاري التحميل..." : isSignUp ? "إنشاء الحساب" : "تسجيل الدخول"}
             </Button>
           </form>
 
