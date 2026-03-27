@@ -302,6 +302,7 @@ export default function Editor() {
             <TabsList className="w-full">
               <TabsTrigger value="text" className="flex-1"><Type className="mr-1 h-3.5 w-3.5" />النص</TabsTrigger>
               <TabsTrigger value="style" className="flex-1"><Eye className="mr-1 h-3.5 w-3.5" />التصميم</TabsTrigger>
+              <TabsTrigger value="voice" className="flex-1"><Volume2 className="mr-1 h-3.5 w-3.5" />صوت</TabsTrigger>
               <TabsTrigger value="settings" className="flex-1"><Settings2 className="mr-1 h-3.5 w-3.5" />إعدادات</TabsTrigger>
             </TabsList>
 
