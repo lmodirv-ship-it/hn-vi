@@ -125,8 +125,8 @@ export default function Dashboard() {
         </Card>
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm cursor-pointer hover:border-primary/40 transition-colors" onClick={() => navigate("/templates")}>
           <CardContent className="flex items-center gap-3 p-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20">
-              <Sparkles className="h-5 w-5 text-amber-400" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/20">
+              <Sparkles className="h-5 w-5 text-accent" />
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">القوالب</p>
