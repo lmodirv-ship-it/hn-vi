@@ -81,12 +81,12 @@ export default function Editor() {
       const url = await exportVideo(scenes, preset, (progress, status) => {
         setExportProgress(progress);
         setExportStatus(status);
-      });
+      }, exportQuality, exportFormat);
 
       // Trigger download
       const a = document.createElement("a");
       a.href = url;
-      a.download = `filmforge-video-${exportPreset}.mp4`;
+      a.download = `filmforge-video-${exportPreset}.${exportFormat}`;
       a.click();
 
       toast({ title: "تم التصدير بنجاح!", description: `تم تصدير الفيديو بجودة ${preset.label}` });
