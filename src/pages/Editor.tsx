@@ -344,6 +344,14 @@ export default function Editor() {
               </div>
             </TabsContent>
 
+            <TabsContent value="voice" className="mt-4">
+              <VoiceoverPanel
+                config={ttsConfig}
+                onChange={setTTSConfig}
+                previewText={currentScene.text}
+              />
+            </TabsContent>
+
             <TabsContent value="settings" className="mt-4 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">المدة (ثواني)</label>
