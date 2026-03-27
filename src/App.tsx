@@ -13,6 +13,7 @@ import Editor from "./pages/Editor";
 import Settings from "./pages/Settings";
 import DashboardLayout from "./components/DashboardLayout";
 import NotFound from "./pages/NotFound";
+import Install from "./pages/Install";
 
 const queryClient = new QueryClient();
 
