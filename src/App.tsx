@@ -37,6 +37,7 @@ const App = () => (
               <Route path="/templates" element={<Templates />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
+            <Route path="/install" element={<Install />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
