@@ -55,6 +55,63 @@ export default function Editor() {
     setCanvasControls(controls);
   }, []);
 
+  // Load project from database
+  useEffect(() => {
+    if (!id || !user) {
+      setLoadingProject(false);
+      return;
+    }
+    const loadProject = async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .single();
+      if (data) {
+        setProjectTitle(data.title);
+        if (Array.isArray(data.script_json) && data.script_json.length > 0) {
+          setScenes(data.script_json as unknown as SceneData[]);
+          setActiveScene((data.script_json as any[])[0]?.id || "1");
+        }
+      } else if (error) {
+        console.error("Error loading project:", error.message);
+      }
+      setLoadingProject(false);
+    };
+    loadProject();
+  }, [id, user]);
+
+  // Auto-save with debounce
+  const saveProject = useCallback(async (scenesToSave: SceneData[], title: string) => {
+    if (!id || !user) return;
+    setSaveStatus("saving");
+    const { error } = await supabase
+      .from("projects")
+      .update({
+        script_json: scenesToSave as unknown as any,
+        title: title,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .eq("user_id", user.id);
+    if (error) {
+      setSaveStatus("unsaved");
+    } else {
+      setSaveStatus("saved");
+    }
+  }, [id, user]);
+
+  useEffect(() => {
+    if (loadingProject) return;
+    setSaveStatus("unsaved");
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      saveProject(scenes, projectTitle);
+    }, 1500);
+    return () => { if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current); };
+  }, [scenes, projectTitle, saveProject, loadingProject]);
+
   const currentScene = scenes.find((s) => s.id === activeScene) || scenes[0];
 
   const updateScene = (field: keyof SceneData, value: string | number) => {
