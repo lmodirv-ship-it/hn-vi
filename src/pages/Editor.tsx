@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Progress } from "@/components/ui/progress";
 import {
   Plus, Trash2, ChevronLeft, Download, GripVertical,
-  Type, Eye, Film, Loader2, Settings2
+  Type, Eye, Film, Loader2, Settings2, Save, Cloud, CloudOff
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { EXPORT_PRESETS, type SceneData, type VideoQuality, type VideoFormat, exportVideo } from "@/lib/ffmpeg";
@@ -17,6 +17,8 @@ import { supportsWebCodecs, exportWithWebCodecs } from "@/lib/videoProcessor";
 import { exportWithCanvasRecorder } from "@/lib/canvasRecorder";
 import CanvasPreview from "@/components/CanvasPreview";
 import { Timeline } from "@/components/timeline/Timeline";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
@@ -27,8 +29,13 @@ const defaultScenes: SceneData[] = [
 export default function Editor() {
   const { id } = useParams();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [scenes, setScenes] = useState<SceneData[]>(defaultScenes);
   const [activeScene, setActiveScene] = useState<string>("1");
+  const [projectTitle, setProjectTitle] = useState("مشروع بدون عنوان");
+  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "unsaved">("saved");
+  const [loadingProject, setLoadingProject] = useState(true);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Export state
   const [showExport, setShowExport] = useState(false);
   const [exportPreset, setExportPreset] = useState<string>("1080p");
@@ -47,6 +54,63 @@ export default function Editor() {
   const handleControlsReady = useCallback((controls: any) => {
     setCanvasControls(controls);
   }, []);
+
+  // Load project from database
+  useEffect(() => {
+    if (!id || !user) {
+      setLoadingProject(false);
+      return;
+    }
+    const loadProject = async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .single();
+      if (data) {
+        setProjectTitle(data.title);
+        if (Array.isArray(data.script_json) && data.script_json.length > 0) {
+          setScenes(data.script_json as unknown as SceneData[]);
+          setActiveScene((data.script_json as any[])[0]?.id || "1");
+        }
+      } else if (error) {
+        console.error("Error loading project:", error.message);
+      }
+      setLoadingProject(false);
+    };
+    loadProject();
+  }, [id, user]);
+
+  // Auto-save with debounce
+  const saveProject = useCallback(async (scenesToSave: SceneData[], title: string) => {
+    if (!id || !user) return;
+    setSaveStatus("saving");
+    const { error } = await supabase
+      .from("projects")
+      .update({
+        script_json: scenesToSave as unknown as any,
+        title: title,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .eq("user_id", user.id);
+    if (error) {
+      setSaveStatus("unsaved");
+    } else {
+      setSaveStatus("saved");
+    }
+  }, [id, user]);
+
+  useEffect(() => {
+    if (loadingProject) return;
+    setSaveStatus("unsaved");
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      saveProject(scenes, projectTitle);
+    }, 1500);
+    return () => { if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current); };
+  }, [scenes, projectTitle, saveProject, loadingProject]);
 
   const currentScene = scenes.find((s) => s.id === activeScene) || scenes[0];
 
@@ -139,6 +203,14 @@ export default function Editor() {
     return `${m}:${String(s).padStart(2, "0")}`;
   };
 
+  if (loadingProject) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Top Bar */}
@@ -151,7 +223,16 @@ export default function Editor() {
             <div className="flex h-7 w-7 items-center justify-center rounded-md gradient-primary">
               <Film className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
-            <span className="font-semibold font-['Space_Grotesk']">المحرر</span>
+            <Input
+              value={projectTitle}
+              onChange={(e) => setProjectTitle(e.target.value)}
+              className="h-8 w-40 border-none bg-transparent px-1 text-sm font-semibold font-['Space_Grotesk'] focus-visible:ring-1"
+            />
+          </div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            {saveStatus === "saving" && <><Loader2 className="h-3 w-3 animate-spin" /> جاري الحفظ...</>}
+            {saveStatus === "saved" && <><Cloud className="h-3 w-3 text-green-500" /> تم الحفظ</>}
+            {saveStatus === "unsaved" && <><CloudOff className="h-3 w-3 text-yellow-500" /> غير محفوظ</>}
           </div>
         </div>
         <div className="flex items-center gap-2">
