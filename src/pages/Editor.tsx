@@ -12,7 +12,7 @@ import {
   Type, Eye, Film, Loader2, Settings2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { exportVideo, EXPORT_PRESETS, type SceneData } from "@/lib/ffmpeg";
+import { exportVideo, EXPORT_PRESETS, type SceneData, type VideoQuality, type VideoFormat } from "@/lib/ffmpeg";
 import CanvasPreview from "@/components/CanvasPreview";
 import { Timeline } from "@/components/timeline/Timeline";
 
@@ -30,6 +30,8 @@ export default function Editor() {
   // Export state
   const [showExport, setShowExport] = useState(false);
   const [exportPreset, setExportPreset] = useState<string>("1080p");
+  const [exportQuality, setExportQuality] = useState<VideoQuality>("high");
+  const [exportFormat, setExportFormat] = useState<VideoFormat>("mp4");
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
@@ -79,12 +81,12 @@ export default function Editor() {
       const url = await exportVideo(scenes, preset, (progress, status) => {
         setExportProgress(progress);
         setExportStatus(status);
-      });
+      }, exportQuality, exportFormat);
 
       // Trigger download
       const a = document.createElement("a");
       a.href = url;
-      a.download = `filmforge-video-${exportPreset}.mp4`;
+      a.download = `filmforge-video-${exportPreset}.${exportFormat}`;
       a.click();
 
       toast({ title: "تم التصدير بنجاح!", description: `تم تصدير الفيديو بجودة ${preset.label}` });
@@ -268,6 +270,28 @@ export default function Editor() {
                           {preset.label} ({preset.width}×{preset.height})
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">مستوى الجودة</label>
+                  <Select value={exportQuality} onValueChange={(v) => setExportQuality(v as VideoQuality)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">منخفضة (سريع)</SelectItem>
+                      <SelectItem value="medium">متوسطة</SelectItem>
+                      <SelectItem value="high">عالية (موصى به)</SelectItem>
+                      <SelectItem value="ultra">فائقة (بطيء)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">صيغة الملف</label>
+                  <Select value={exportFormat} onValueChange={(v) => setExportFormat(v as VideoFormat)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mp4">MP4 (موصى به)</SelectItem>
+                      <SelectItem value="webm">WebM</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
