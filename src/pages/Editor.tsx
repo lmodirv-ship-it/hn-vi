@@ -203,6 +203,14 @@ export default function Editor() {
     return `${m}:${String(s).padStart(2, "0")}`;
   };
 
+  if (loadingProject) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Top Bar */}
@@ -215,7 +223,16 @@ export default function Editor() {
             <div className="flex h-7 w-7 items-center justify-center rounded-md gradient-primary">
               <Film className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
-            <span className="font-semibold font-['Space_Grotesk']">المحرر</span>
+            <Input
+              value={projectTitle}
+              onChange={(e) => setProjectTitle(e.target.value)}
+              className="h-8 w-40 border-none bg-transparent px-1 text-sm font-semibold font-['Space_Grotesk'] focus-visible:ring-1"
+            />
+          </div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            {saveStatus === "saving" && <><Loader2 className="h-3 w-3 animate-spin" /> جاري الحفظ...</>}
+            {saveStatus === "saved" && <><Cloud className="h-3 w-3 text-green-500" /> تم الحفظ</>}
+            {saveStatus === "unsaved" && <><CloudOff className="h-3 w-3 text-yellow-500" /> غير محفوظ</>}
           </div>
         </div>
         <div className="flex items-center gap-2">
