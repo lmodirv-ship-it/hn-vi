@@ -12,7 +12,7 @@ import {
   Type, Eye, Film, Loader2, Settings2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { exportVideo, EXPORT_PRESETS, type SceneData } from "@/lib/ffmpeg";
+import { exportVideo, EXPORT_PRESETS, type SceneData, type VideoQuality, type VideoFormat } from "@/lib/ffmpeg";
 import CanvasPreview from "@/components/CanvasPreview";
 import { Timeline } from "@/components/timeline/Timeline";
 
