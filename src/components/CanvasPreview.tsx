@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useMemo } from 'react';
+import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import type { SceneData } from '@/lib/ffmpeg';
 import { useCanvasAnimation } from '@/hooks/useCanvasAnimation';
 import CanvasControls from '@/components/canvas/CanvasControls';
