@@ -327,6 +327,21 @@ export default function Editor() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">طريقة المعالجة</label>
+                  <Select value={exportMethod} onValueChange={(v) => setExportMethod(v as any)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">تلقائي (موصى به)</SelectItem>
+                      <SelectItem value="webcodecs">WebCodecs (أسرع)</SelectItem>
+                      <SelectItem value="ffmpeg">FFmpeg (كلاسيكي)</SelectItem>
+                      <SelectItem value="canvas">Canvas Recorder (متوافق)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {supportsWebCodecs() ? "✅ متصفحك يدعم WebCodecs" : "⚠️ متصفحك لا يدعم WebCodecs، سيتم استخدام البديل"}
+                  </p>
+                </div>
                 <div className="rounded-lg border border-border bg-muted/50 p-4 text-sm">
                   <div className="flex justify-between mb-1">
                     <span className="text-muted-foreground">عدد المشاهد</span>
