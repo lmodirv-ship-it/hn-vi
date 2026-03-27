@@ -26,8 +26,6 @@ export default function Editor() {
   const { toast } = useToast();
   const [scenes, setScenes] = useState<SceneData[]>(defaultScenes);
   const [activeScene, setActiveScene] = useState<string>("1");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
   // Export state
   const [showExport, setShowExport] = useState(false);
   const [exportPreset, setExportPreset] = useState<string>("1080p");
