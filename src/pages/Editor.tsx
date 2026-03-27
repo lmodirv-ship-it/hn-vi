@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import {
-  Play, Pause, Plus, Trash2, ChevronLeft, Download, GripVertical,
-  Type, Settings2, Eye, Film, Loader2, RotateCcw
+  Plus, Trash2, ChevronLeft, Download, GripVertical,
+  Type, Eye, Film, Loader2, Settings2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportVideo, EXPORT_PRESETS, type SceneData } from "@/lib/ffmpeg";
