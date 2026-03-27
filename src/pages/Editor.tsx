@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Progress } from "@/components/ui/progress";
 import {
   Plus, Trash2, ChevronLeft, Download, GripVertical,
-  Type, Eye, Film, Loader2, Settings2, Save, Cloud, CloudOff
+  Type, Eye, Film, Loader2, Settings2, Save, Cloud, CloudOff, Volume2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { EXPORT_PRESETS, type SceneData, type VideoQuality, type VideoFormat, exportVideo } from "@/lib/ffmpeg";
