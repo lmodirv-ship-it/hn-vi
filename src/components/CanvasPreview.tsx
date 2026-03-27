@@ -10,10 +10,21 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+export interface CanvasAnimationControls {
+  isPlaying: boolean;
+  currentTime: number;
+  totalDuration: number;
+  play: () => void;
+  pause: () => void;
+  restart: () => void;
+  seek: (time: number) => void;
+}
+
 interface CanvasPreviewProps {
   scenes: SceneData[];
   activeSceneId: string;
   onSceneChange: (id: string) => void;
+  onControlsReady?: (controls: CanvasAnimationControls) => void;
 }
 
 export default function CanvasPreview({ scenes, activeSceneId, onSceneChange }: CanvasPreviewProps) {
