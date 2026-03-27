@@ -71,7 +71,7 @@ export function AppSidebar() {
       <SidebarFooter className="p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent">
+            <SidebarMenuButton onClick={handleSignOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent">
               <LogOut className="mr-2 h-4 w-4" />
               {!collapsed && <span>تسجيل الخروج</span>}
             </SidebarMenuButton>
