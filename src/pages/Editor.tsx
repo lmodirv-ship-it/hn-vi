@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Progress } from "@/components/ui/progress";
 import {
   Plus, Trash2, ChevronLeft, Download, GripVertical,
-  Type, Eye, Film, Loader2, Settings2
+  Type, Eye, Film, Loader2, Settings2, Save, Cloud, CloudOff
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { EXPORT_PRESETS, type SceneData, type VideoQuality, type VideoFormat, exportVideo } from "@/lib/ffmpeg";
@@ -17,6 +17,8 @@ import { supportsWebCodecs, exportWithWebCodecs } from "@/lib/videoProcessor";
 import { exportWithCanvasRecorder } from "@/lib/canvasRecorder";
 import CanvasPreview from "@/components/CanvasPreview";
 import { Timeline } from "@/components/timeline/Timeline";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
@@ -27,8 +29,13 @@ const defaultScenes: SceneData[] = [
 export default function Editor() {
   const { id } = useParams();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [scenes, setScenes] = useState<SceneData[]>(defaultScenes);
   const [activeScene, setActiveScene] = useState<string>("1");
+  const [projectTitle, setProjectTitle] = useState("مشروع بدون عنوان");
+  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "unsaved">("saved");
+  const [loadingProject, setLoadingProject] = useState(true);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Export state
   const [showExport, setShowExport] = useState(false);
   const [exportPreset, setExportPreset] = useState<string>("1080p");
