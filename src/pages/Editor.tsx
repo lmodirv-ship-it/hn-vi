@@ -158,77 +158,12 @@ export default function Editor() {
         </div>
 
         {/* Main Area */}
-        <div className="flex flex-1 flex-col overflow-hidden">
-          {/* Canvas Preview */}
-          <div className="flex flex-1 items-center justify-center bg-muted/20 p-4">
-            <CanvasPreview
-              scenes={scenes}
-              activeSceneId={activeScene}
-              isPlaying={isPlaying}
-              onSceneChange={setActiveScene}
-              onPlayingChange={setIsPlaying}
-              onTimeUpdate={handleTimeUpdate}
-            />
-          </div>
-
-          {/* Timeline Bar */}
-          <div className="border-t border-border bg-muted/30 px-4 py-3">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
-                  setIsPlaying(false);
-                  setActiveScene(scenes[0].id);
-                }}>
-                  <RotateCcw className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPlaying(!isPlaying)}>
-                  {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                </Button>
-              </div>
-              <span className="text-xs text-muted-foreground font-mono w-12">{formatTime(currentTime)}</span>
-              <div className="flex flex-1 gap-0.5 items-center">
-                {scenes.map((s) => {
-                  // Calculate scene start/end in timeline
-                  let sceneStart = 0;
-                  for (const sc of scenes) {
-                    if (sc.id === s.id) break;
-                    sceneStart += sc.duration;
-                  }
-                  const sceneEnd = sceneStart + s.duration;
-                  const isCurrent = currentTime >= sceneStart && currentTime < sceneEnd;
-                  const sceneProgress = isCurrent ? (currentTime - sceneStart) / s.duration : currentTime >= sceneEnd ? 1 : 0;
-
-                  return (
-                    <button
-                      key={s.id}
-                      onClick={() => { setActiveScene(s.id); setIsPlaying(false); }}
-                      className={`relative h-8 rounded overflow-hidden transition-all ${
-                        activeScene === s.id ? "ring-2 ring-primary ring-offset-1 ring-offset-background" : ""
-                      }`}
-                      style={{
-                        width: `${(s.duration / totalDuration) * 100}%`,
-                        minWidth: "2rem",
-                      }}
-                      title={s.title}
-                    >
-                      <div className="absolute inset-0" style={{ backgroundColor: s.bgColor, opacity: 0.5 }} />
-                      <div
-                        className="absolute inset-y-0 left-0"
-                        style={{
-                          backgroundColor: s.bgColor,
-                          width: `${sceneProgress * 100}%`,
-                        }}
-                      />
-                      <span className="relative z-10 text-[10px] text-white/80 font-medium px-1 truncate block leading-8">
-                        {s.title}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <span className="text-xs text-muted-foreground font-mono w-12 text-right">{formatTime(totalDuration)}</span>
-            </div>
-          </div>
+        <div className="flex flex-1 flex-col overflow-hidden relative">
+          <CanvasPreview
+            scenes={scenes}
+            activeSceneId={activeScene}
+            onSceneChange={setActiveScene}
+          />
         </div>
 
         {/* Properties Panel */}
