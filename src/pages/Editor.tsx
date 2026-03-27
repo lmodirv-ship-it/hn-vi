@@ -91,6 +91,16 @@ export default function Editor() {
 
   const totalDuration = scenes.reduce((acc, s) => acc + s.duration, 0);
 
+  const handleTimeUpdate = useCallback((elapsed: number, total: number) => {
+    setCurrentTime(elapsed);
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${String(s).padStart(2, "0")}`;
+  };
+
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Top Bar */}
