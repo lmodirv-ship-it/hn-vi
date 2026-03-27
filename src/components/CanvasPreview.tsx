@@ -27,7 +27,7 @@ interface CanvasPreviewProps {
   onControlsReady?: (controls: CanvasAnimationControls) => void;
 }
 
-export default function CanvasPreview({ scenes, activeSceneId, onSceneChange }: CanvasPreviewProps) {
+export default function CanvasPreview({ scenes, activeSceneId, onSceneChange, onControlsReady }: CanvasPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
