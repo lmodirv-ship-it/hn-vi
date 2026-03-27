@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Progress } from "@/components/ui/progress";
 import {
   Plus, Trash2, ChevronLeft, Download, GripVertical,
-  Type, Eye, Film, Loader2, Settings2, Save, Cloud, CloudOff
+  Type, Eye, Film, Loader2, Settings2, Save, Cloud, CloudOff, Volume2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { EXPORT_PRESETS, type SceneData, type VideoQuality, type VideoFormat, exportVideo } from "@/lib/ffmpeg";
@@ -19,6 +19,8 @@ import CanvasPreview from "@/components/CanvasPreview";
 import { Timeline } from "@/components/timeline/Timeline";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import VoiceoverPanel from "@/components/VoiceoverPanel";
+import { type TTSConfig, DEFAULT_TTS_CONFIG } from "@/lib/ttsService";
 
 const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
@@ -45,6 +47,8 @@ export default function Editor() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
+  // TTS config
+  const [ttsConfig, setTTSConfig] = useState<TTSConfig>(DEFAULT_TTS_CONFIG);
   // Canvas animation controls
   const [canvasControls, setCanvasControls] = useState<{
     isPlaying: boolean; currentTime: number; totalDuration: number;
@@ -298,6 +302,7 @@ export default function Editor() {
             <TabsList className="w-full">
               <TabsTrigger value="text" className="flex-1"><Type className="mr-1 h-3.5 w-3.5" />النص</TabsTrigger>
               <TabsTrigger value="style" className="flex-1"><Eye className="mr-1 h-3.5 w-3.5" />التصميم</TabsTrigger>
+              <TabsTrigger value="voice" className="flex-1"><Volume2 className="mr-1 h-3.5 w-3.5" />صوت</TabsTrigger>
               <TabsTrigger value="settings" className="flex-1"><Settings2 className="mr-1 h-3.5 w-3.5" />إعدادات</TabsTrigger>
             </TabsList>
 
@@ -337,6 +342,14 @@ export default function Editor() {
                   </SelectContent>
                 </Select>
               </div>
+            </TabsContent>
+
+            <TabsContent value="voice" className="mt-4">
+              <VoiceoverPanel
+                config={ttsConfig}
+                onChange={setTTSConfig}
+                previewText={currentScene.text}
+              />
             </TabsContent>
 
             <TabsContent value="settings" className="mt-4 space-y-4">
