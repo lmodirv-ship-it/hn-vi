@@ -54,9 +54,9 @@ export default function Install() {
         </div>
 
         {isInstalled || isStandalone ? (
-          <div className="rounded-xl border border-green-500/20 bg-green-500/10 p-6">
-            <Check className="mx-auto h-10 w-10 text-green-500 mb-3" />
-            <p className="text-lg font-semibold text-green-400">التطبيق مثبّت بالفعل!</p>
+          <div className="rounded-xl border border-primary/20 bg-primary/10 p-6">
+            <Check className="mx-auto h-10 w-10 text-primary mb-3" />
+            <p className="text-lg font-semibold">التطبيق مثبّت بالفعل!</p>
           </div>
         ) : (
           <div className="space-y-4">
