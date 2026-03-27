@@ -14,6 +14,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { exportVideo, EXPORT_PRESETS, type SceneData } from "@/lib/ffmpeg";
 import CanvasPreview from "@/components/CanvasPreview";
+import { Timeline } from "@/components/timeline/Timeline";
 
 const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
