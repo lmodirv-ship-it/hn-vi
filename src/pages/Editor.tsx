@@ -12,7 +12,9 @@ import {
   Type, Eye, Film, Loader2, Settings2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { exportVideo, EXPORT_PRESETS, type SceneData, type VideoQuality, type VideoFormat } from "@/lib/ffmpeg";
+import { EXPORT_PRESETS, type SceneData, type VideoQuality, type VideoFormat, exportVideo } from "@/lib/ffmpeg";
+import { supportsWebCodecs, exportWithWebCodecs } from "@/lib/videoProcessor";
+import { exportWithCanvasRecorder } from "@/lib/canvasRecorder";
 import CanvasPreview from "@/components/CanvasPreview";
 import { Timeline } from "@/components/timeline/Timeline";
 
@@ -32,6 +34,7 @@ export default function Editor() {
   const [exportPreset, setExportPreset] = useState<string>("1080p");
   const [exportQuality, setExportQuality] = useState<VideoQuality>("high");
   const [exportFormat, setExportFormat] = useState<VideoFormat>("mp4");
+  const [exportMethod, setExportMethod] = useState<"auto" | "webcodecs" | "ffmpeg" | "canvas">("auto");
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
@@ -78,15 +81,44 @@ export default function Editor() {
 
     try {
       const preset = EXPORT_PRESETS[exportPreset];
-      const url = await exportVideo(scenes, preset, (progress, status) => {
+      const progressCb = (progress: number, status: string) => {
         setExportProgress(progress);
         setExportStatus(status);
-      }, exportQuality, exportFormat);
+      };
 
-      // Trigger download
+      const bitrateMap: Record<VideoQuality, number> = {
+        low: 1_000_000, medium: 2_500_000, high: 5_000_000, ultra: 10_000_000,
+      };
+
+      // Determine method
+      let method = exportMethod;
+      if (method === "auto") {
+        method = supportsWebCodecs() ? "webcodecs" : "canvas";
+      }
+
+      let url: string;
+      let fileExt = exportFormat;
+
+      if (method === "webcodecs") {
+        url = await exportWithWebCodecs(scenes, {
+          width: preset.width, height: preset.height, fps: preset.fps,
+          bitrate: bitrateMap[exportQuality],
+        }, progressCb);
+        fileExt = "mp4";
+      } else if (method === "canvas") {
+        url = await exportWithCanvasRecorder(scenes, {
+          width: preset.width, height: preset.height, fps: preset.fps,
+          bitrate: bitrateMap[exportQuality],
+        }, progressCb);
+        fileExt = "webm";
+      } else {
+        url = await exportVideo(scenes, preset, progressCb, exportQuality, exportFormat);
+        fileExt = exportFormat;
+      }
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = `filmforge-video-${exportPreset}.${exportFormat}`;
+      a.download = `filmforge-video-${exportPreset}.${fileExt}`;
       a.click();
 
       toast({ title: "تم التصدير بنجاح!", description: `تم تصدير الفيديو بجودة ${preset.label}` });
@@ -294,6 +326,21 @@ export default function Editor() {
                       <SelectItem value="webm">WebM</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">طريقة المعالجة</label>
+                  <Select value={exportMethod} onValueChange={(v) => setExportMethod(v as any)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">تلقائي (موصى به)</SelectItem>
+                      <SelectItem value="webcodecs">WebCodecs (أسرع)</SelectItem>
+                      <SelectItem value="ffmpeg">FFmpeg (كلاسيكي)</SelectItem>
+                      <SelectItem value="canvas">Canvas Recorder (متوافق)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {supportsWebCodecs() ? "✅ متصفحك يدعم WebCodecs" : "⚠️ متصفحك لا يدعم WebCodecs، سيتم استخدام البديل"}
+                  </p>
                 </div>
                 <div className="rounded-lg border border-border bg-muted/50 p-4 text-sm">
                   <div className="flex justify-between mb-1">
