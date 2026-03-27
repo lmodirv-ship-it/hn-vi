@@ -1,0 +1,239 @@
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Play, Pause, Plus, Trash2, ChevronLeft, Download, GripVertical,
+  Type, Image, Music, Settings2, Eye, Film
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface Scene {
+  id: string;
+  title: string;
+  text: string;
+  duration: number;
+  bgColor: string;
+  transition: string;
+}
+
+const defaultScenes: Scene[] = [
+  { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
+  { id: "2", title: "المحتوى الرئيسي", text: "هنا يمكنك كتابة المحتوى الأساسي للفيديو", duration: 8, bgColor: "#2DD4A8", transition: "slide" },
+  { id: "3", title: "الخاتمة", text: "شكرًا لمشاهدتكم!", duration: 4, bgColor: "#6C3AED", transition: "fade" },
+];
+
+export default function Editor() {
+  const { id } = useParams();
+  const { toast } = useToast();
+  const [scenes, setScenes] = useState<Scene[]>(defaultScenes);
+  const [activeScene, setActiveScene] = useState<string>("1");
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const currentScene = scenes.find((s) => s.id === activeScene) || scenes[0];
+
+  const updateScene = (field: keyof Scene, value: string | number) => {
+    setScenes(scenes.map((s) => (s.id === activeScene ? { ...s, [field]: value } : s)));
+  };
+
+  const addScene = () => {
+    const newScene: Scene = {
+      id: Date.now().toString(),
+      title: `مشهد ${scenes.length + 1}`,
+      text: "أدخل النص هنا...",
+      duration: 5,
+      bgColor: "#6C3AED",
+      transition: "fade",
+    };
+    setScenes([...scenes, newScene]);
+    setActiveScene(newScene.id);
+  };
+
+  const deleteScene = (sceneId: string) => {
+    if (scenes.length <= 1) return;
+    const newScenes = scenes.filter((s) => s.id !== sceneId);
+    setScenes(newScenes);
+    if (activeScene === sceneId) setActiveScene(newScenes[0].id);
+  };
+
+  const totalDuration = scenes.reduce((acc, s) => acc + s.duration, 0);
+
+  return (
+    <div className="flex h-screen flex-col bg-background">
+      {/* Top Bar */}
+      <div className="flex h-14 items-center justify-between border-b border-border px-4">
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="icon"><ChevronLeft className="h-4 w-4" /></Button>
+          </Link>
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md gradient-primary">
+              <Film className="h-3.5 w-3.5 text-primary-foreground" />
+            </div>
+            <span className="font-semibold font-['Space_Grotesk']">المحرر</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">المدة: {totalDuration}ث</span>
+          <Button variant="outline" size="sm" onClick={() => toast({ title: "قريبًا!", description: "ميزة التصدير ستكون متاحة قريبًا" })}>
+            <Download className="mr-2 h-4 w-4" />
+            تصدير
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Scene List Sidebar */}
+        <div className="w-56 shrink-0 overflow-y-auto border-r border-border bg-muted/30 p-3">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-sm font-medium">المشاهد</span>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={addScene}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="space-y-1.5">
+            {scenes.map((scene, i) => (
+              <button
+                key={scene.id}
+                onClick={() => setActiveScene(scene.id)}
+                className={`group flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                  activeScene === scene.id
+                    ? "bg-primary/10 text-primary border border-primary/20"
+                    : "hover:bg-muted border border-transparent"
+                }`}
+              >
+                <GripVertical className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40" />
+                <div className="flex-1 truncate">
+                  <span className="text-xs text-muted-foreground">#{i + 1}</span>
+                  <p className="truncate font-medium">{scene.title}</p>
+                </div>
+                {scenes.length > 1 && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteScene(scene.id); }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </button>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Area */}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Canvas Preview */}
+          <div className="flex flex-1 items-center justify-center bg-muted/20 p-6">
+            <div
+              className="relative flex aspect-video w-full max-w-3xl items-center justify-center rounded-xl shadow-2xl overflow-hidden"
+              style={{ backgroundColor: currentScene.bgColor }}
+            >
+              <div className="absolute inset-0 opacity-20" style={{
+                backgroundImage: 'radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 50%)'
+              }} />
+              <div className="relative text-center px-12">
+                <p className="text-2xl font-bold text-white md:text-4xl font-['Space_Grotesk'] leading-relaxed drop-shadow-lg">
+                  {currentScene.text}
+                </p>
+              </div>
+              {/* Play overlay */}
+              <button
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/10 transition-colors"
+              >
+                <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity">
+                  {isPlaying ? <Pause className="h-6 w-6 text-white" /> : <Play className="h-6 w-6 text-white" />}
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Timeline Bar */}
+          <div className="border-t border-border bg-muted/30 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPlaying(!isPlaying)}>
+                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+              <div className="flex flex-1 gap-1">
+                {scenes.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setActiveScene(s.id)}
+                    className={`h-8 rounded transition-all ${activeScene === s.id ? "ring-2 ring-primary" : ""}`}
+                    style={{
+                      backgroundColor: s.bgColor,
+                      width: `${(s.duration / totalDuration) * 100}%`,
+                      minWidth: "2rem",
+                    }}
+                    title={s.title}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">{totalDuration}ث</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Properties Panel */}
+        <div className="w-72 shrink-0 overflow-y-auto border-l border-border p-4">
+          <Tabs defaultValue="text">
+            <TabsList className="w-full">
+              <TabsTrigger value="text" className="flex-1"><Type className="mr-1 h-3.5 w-3.5" />النص</TabsTrigger>
+              <TabsTrigger value="style" className="flex-1"><Eye className="mr-1 h-3.5 w-3.5" />التصميم</TabsTrigger>
+              <TabsTrigger value="settings" className="flex-1"><Settings2 className="mr-1 h-3.5 w-3.5" />إعدادات</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="text" className="mt-4 space-y-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">عنوان المشهد</label>
+                <Input value={currentScene.title} onChange={(e) => updateScene("title", e.target.value)} />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">النص</label>
+                <Textarea rows={6} value={currentScene.text} onChange={(e) => updateScene("text", e.target.value)} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="style" className="mt-4 space-y-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">لون الخلفية</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={currentScene.bgColor}
+                    onChange={(e) => updateScene("bgColor", e.target.value)}
+                    className="h-10 w-10 cursor-pointer rounded border border-border"
+                  />
+                  <Input value={currentScene.bgColor} onChange={(e) => updateScene("bgColor", e.target.value)} className="flex-1" />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">الانتقال</label>
+                <Select value={currentScene.transition} onValueChange={(v) => updateScene("transition", v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fade">تلاشي</SelectItem>
+                    <SelectItem value="slide">انزلاق</SelectItem>
+                    <SelectItem value="wipe">مسح</SelectItem>
+                    <SelectItem value="zoom">تكبير</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="settings" className="mt-4 space-y-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">المدة (ثواني)</label>
+                <Input type="number" min={1} max={60} value={currentScene.duration} onChange={(e) => updateScene("duration", parseInt(e.target.value) || 1)} />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </div>
+  );
+}
