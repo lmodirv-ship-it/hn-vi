@@ -173,6 +173,7 @@ export default function Editor() {
             scenes={scenes}
             activeSceneId={activeScene}
             onSceneChange={setActiveScene}
+            onControlsReady={handleControlsReady}
           />
         </div>
 
