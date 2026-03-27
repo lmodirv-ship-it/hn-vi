@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { exportVideo, EXPORT_PRESETS, type SceneData } from "@/lib/ffmpeg";
 import CanvasPreview from "@/components/CanvasPreview";
+import { Timeline } from "@/components/timeline/Timeline";
 
 const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
@@ -32,6 +33,15 @@ export default function Editor() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
+  // Canvas animation controls
+  const [canvasControls, setCanvasControls] = useState<{
+    isPlaying: boolean; currentTime: number; totalDuration: number;
+    play: () => void; pause: () => void; restart: () => void; seek: (t: number) => void;
+  } | null>(null);
+
+  const handleControlsReady = useCallback((controls: any) => {
+    setCanvasControls(controls);
+  }, []);
 
   const currentScene = scenes.find((s) => s.id === activeScene) || scenes[0];
 
@@ -163,6 +173,7 @@ export default function Editor() {
             scenes={scenes}
             activeSceneId={activeScene}
             onSceneChange={setActiveScene}
+            onControlsReady={handleControlsReady}
           />
         </div>
 
@@ -222,6 +233,21 @@ export default function Editor() {
           </Tabs>
         </div>
       </div>
+
+      {/* Timeline */}
+      <Timeline
+        scenes={scenes}
+        currentTime={canvasControls?.currentTime ?? 0}
+        totalDuration={canvasControls?.totalDuration ?? totalDuration}
+        isPlaying={canvasControls?.isPlaying ?? false}
+        activeSceneId={activeScene}
+        onScenesChange={setScenes}
+        onSceneSelect={setActiveScene}
+        onSeek={(t) => canvasControls?.seek(t)}
+        onPlay={() => canvasControls?.play()}
+        onPause={() => canvasControls?.pause()}
+        onRestart={() => canvasControls?.restart()}
+      />
 
       {/* Export Dialog */}
       <Dialog open={showExport} onOpenChange={setShowExport}>

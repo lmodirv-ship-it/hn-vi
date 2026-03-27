@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useMemo } from 'react';
+import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import type { SceneData } from '@/lib/ffmpeg';
 import { useCanvasAnimation } from '@/hooks/useCanvasAnimation';
 import CanvasControls from '@/components/canvas/CanvasControls';
@@ -10,13 +10,24 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+export interface CanvasAnimationControls {
+  isPlaying: boolean;
+  currentTime: number;
+  totalDuration: number;
+  play: () => void;
+  pause: () => void;
+  restart: () => void;
+  seek: (time: number) => void;
+}
+
 interface CanvasPreviewProps {
   scenes: SceneData[];
   activeSceneId: string;
   onSceneChange: (id: string) => void;
+  onControlsReady?: (controls: CanvasAnimationControls) => void;
 }
 
-export default function CanvasPreview({ scenes, activeSceneId, onSceneChange }: CanvasPreviewProps) {
+export default function CanvasPreview({ scenes, activeSceneId, onSceneChange, onControlsReady }: CanvasPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -38,6 +49,11 @@ export default function CanvasPreview({ scenes, activeSceneId, onSceneChange }: 
     bgImage,
     aspectRatioValue,
   });
+
+  // Expose controls to parent
+  useEffect(() => {
+    onControlsReady?.({ isPlaying, currentTime, totalDuration, play, pause, restart, seek });
+  }, [isPlaying, currentTime, totalDuration, play, pause, restart, seek, onControlsReady]);
 
   // Sync scene changes back to parent
   if (currentSceneId !== activeSceneId && isPlaying) {
