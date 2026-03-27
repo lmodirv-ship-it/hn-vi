@@ -30,6 +30,8 @@ export default function Editor() {
   // Export state
   const [showExport, setShowExport] = useState(false);
   const [exportPreset, setExportPreset] = useState<string>("1080p");
+  const [exportQuality, setExportQuality] = useState<VideoQuality>("high");
+  const [exportFormat, setExportFormat] = useState<VideoFormat>("mp4");
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
