@@ -3,25 +3,18 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 import {
   Play, Pause, Plus, Trash2, ChevronLeft, Download, GripVertical,
-  Type, Image, Music, Settings2, Eye, Film
+  Type, Settings2, Eye, Film, Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { exportVideo, EXPORT_PRESETS, type SceneData } from "@/lib/ffmpeg";
 
-interface Scene {
-  id: string;
-  title: string;
-  text: string;
-  duration: number;
-  bgColor: string;
-  transition: string;
-}
-
-const defaultScenes: Scene[] = [
+const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
   { id: "2", title: "المحتوى الرئيسي", text: "هنا يمكنك كتابة المحتوى الأساسي للفيديو", duration: 8, bgColor: "#2DD4A8", transition: "slide" },
   { id: "3", title: "الخاتمة", text: "شكرًا لمشاهدتكم!", duration: 4, bgColor: "#6C3AED", transition: "fade" },
@@ -30,18 +23,25 @@ const defaultScenes: Scene[] = [
 export default function Editor() {
   const { id } = useParams();
   const { toast } = useToast();
-  const [scenes, setScenes] = useState<Scene[]>(defaultScenes);
+  const [scenes, setScenes] = useState<SceneData[]>(defaultScenes);
   const [activeScene, setActiveScene] = useState<string>("1");
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Export state
+  const [showExport, setShowExport] = useState(false);
+  const [exportPreset, setExportPreset] = useState<string>("1080p");
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
+  const [exportStatus, setExportStatus] = useState("");
+
   const currentScene = scenes.find((s) => s.id === activeScene) || scenes[0];
 
-  const updateScene = (field: keyof Scene, value: string | number) => {
+  const updateScene = (field: keyof SceneData, value: string | number) => {
     setScenes(scenes.map((s) => (s.id === activeScene ? { ...s, [field]: value } : s)));
   };
 
   const addScene = () => {
-    const newScene: Scene = {
+    const newScene: SceneData = {
       id: Date.now().toString(),
       title: `مشهد ${scenes.length + 1}`,
       text: "أدخل النص هنا...",
@@ -58,6 +58,34 @@ export default function Editor() {
     const newScenes = scenes.filter((s) => s.id !== sceneId);
     setScenes(newScenes);
     if (activeScene === sceneId) setActiveScene(newScenes[0].id);
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    setExportProgress(0);
+    setExportStatus("جاري البدء...");
+
+    try {
+      const preset = EXPORT_PRESETS[exportPreset];
+      const url = await exportVideo(scenes, preset, (progress, status) => {
+        setExportProgress(progress);
+        setExportStatus(status);
+      });
+
+      // Trigger download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `filmforge-video-${exportPreset}.mp4`;
+      a.click();
+
+      toast({ title: "تم التصدير بنجاح!", description: `تم تصدير الفيديو بجودة ${preset.label}` });
+      setShowExport(false);
+    } catch (error: any) {
+      toast({ title: "خطأ في التصدير", description: error.message, variant: "destructive" });
+    } finally {
+      setIsExporting(false);
+      setExportProgress(0);
+    }
   };
 
   const totalDuration = scenes.reduce((acc, s) => acc + s.duration, 0);
@@ -79,7 +107,7 @@ export default function Editor() {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">المدة: {totalDuration}ث</span>
-          <Button variant="outline" size="sm" onClick={() => toast({ title: "قريبًا!", description: "ميزة التصدير ستكون متاحة قريبًا" })}>
+          <Button variant="outline" size="sm" onClick={() => setShowExport(true)}>
             <Download className="mr-2 h-4 w-4" />
             تصدير
           </Button>
@@ -140,7 +168,6 @@ export default function Editor() {
                   {currentScene.text}
                 </p>
               </div>
-              {/* Play overlay */}
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/10 transition-colors"
@@ -234,6 +261,63 @@ export default function Editor() {
           </Tabs>
         </div>
       </div>
+
+      {/* Export Dialog */}
+      <Dialog open={showExport} onOpenChange={setShowExport}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-['Space_Grotesk']">تصدير الفيديو</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 pt-2">
+            {!isExporting ? (
+              <>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">جودة الفيديو</label>
+                  <Select value={exportPreset} onValueChange={setExportPreset}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(EXPORT_PRESETS).map(([key, preset]) => (
+                        <SelectItem key={key} value={key}>
+                          {preset.label} ({preset.width}×{preset.height})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="rounded-lg border border-border bg-muted/50 p-4 text-sm">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-muted-foreground">عدد المشاهد</span>
+                    <span className="font-medium">{scenes.length}</span>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-muted-foreground">المدة الإجمالية</span>
+                    <span className="font-medium">{totalDuration} ثانية</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">عدد الإطارات</span>
+                    <span className="font-medium">{totalDuration * EXPORT_PRESETS[exportPreset].fps}</span>
+                  </div>
+                </div>
+                <Button onClick={handleExport} className="w-full gradient-primary border-0 text-primary-foreground">
+                  <Download className="mr-2 h-4 w-4" />
+                  بدء التصدير
+                </Button>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+                <Progress value={exportProgress} className="h-2" />
+                <p className="text-center text-sm text-muted-foreground">{exportStatus}</p>
+                <p className="text-center text-xs text-muted-foreground/60">
+                  {Math.round(exportProgress)}%
+                </p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
