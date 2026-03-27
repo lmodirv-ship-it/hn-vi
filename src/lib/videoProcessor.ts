@@ -2,12 +2,17 @@ import { Muxer, ArrayBufferTarget } from "mp4-muxer";
 import type { SceneData } from "./ffmpeg";
 
 /**
- * WebCodecs-based video processor — lighter & faster than FFmpeg.wasm.
- * Falls back to CanvasRecorder when WebCodecs is unavailable.
+ * WebCodecs-based video processor — uses a Web Worker for frame rendering
+ * to keep the main thread responsive. Falls back to main-thread rendering
+ * when OffscreenCanvas is unavailable.
  */
 
 export function supportsWebCodecs(): boolean {
   return typeof VideoEncoder !== "undefined" && typeof VideoFrame !== "undefined";
+}
+
+function supportsOffscreenCanvas(): boolean {
+  return typeof OffscreenCanvas !== "undefined";
 }
 
 export interface VideoProcessorOptions {
@@ -18,6 +23,117 @@ export interface VideoProcessorOptions {
 }
 
 export async function exportWithWebCodecs(
+  scenes: SceneData[],
+  options: VideoProcessorOptions,
+  onProgress: (progress: number, status: string) => void
+): Promise<string> {
+  if (supportsOffscreenCanvas()) {
+    return exportWithWorker(scenes, options, onProgress);
+  }
+  return exportOnMainThread(scenes, options, onProgress);
+}
+
+/* ── Worker-accelerated path ── */
+
+async function exportWithWorker(
+  scenes: SceneData[],
+  options: VideoProcessorOptions,
+  onProgress: (progress: number, status: string) => void
+): Promise<string> {
+  const { width, height, fps, bitrate } = options;
+
+  onProgress(2, "جاري تهيئة المعالج...");
+
+  const target = new ArrayBufferTarget();
+  const muxer = new Muxer({
+    target,
+    video: { codec: "avc", width, height },
+    fastStart: "in-memory",
+  });
+
+  const encoder = new VideoEncoder({
+    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+    error: (e) => { throw e; },
+  });
+
+  encoder.configure({
+    codec: "avc1.42E01E",
+    width,
+    height,
+    bitrate,
+    framerate: fps,
+  });
+
+  const frameDuration = 1_000_000 / fps; // microseconds
+
+  // Spin up worker
+  const worker = new Worker(
+    new URL("../workers/frameRenderer.worker.ts", import.meta.url),
+    { type: "module" }
+  );
+
+  return new Promise<string>((resolve, reject) => {
+    let framesEncoded = 0;
+
+    worker.onmessage = async (e) => {
+      const msg = e.data;
+
+      if (msg.type === "FRAME") {
+        const bitmap: ImageBitmap = msg.bitmap;
+        const frame = new VideoFrame(bitmap, {
+          timestamp: msg.index * frameDuration,
+        });
+        encoder.encode(frame, { keyFrame: msg.index % (fps * 2) === 0 });
+        frame.close();
+        bitmap.close();
+        framesEncoded++;
+      }
+
+      if (msg.type === "PROGRESS") {
+        onProgress(5 + msg.percent * 0.80, msg.status);
+      }
+
+      if (msg.type === "DONE") {
+        worker.terminate();
+        onProgress(88, "جاري إنهاء الترميز...");
+
+        await encoder.flush();
+        encoder.close();
+        muxer.finalize();
+
+        const buf = target.buffer;
+        const blob = new Blob([buf], { type: "video/mp4" });
+        const url = URL.createObjectURL(blob);
+
+        onProgress(100, "تم!");
+        resolve(url);
+      }
+
+      if (msg.type === "ERROR") {
+        worker.terminate();
+        reject(new Error(msg.message));
+      }
+    };
+
+    worker.onerror = (err) => {
+      worker.terminate();
+      reject(new Error(err.message || "خطأ في Worker"));
+    };
+
+    // Start rendering
+    worker.postMessage({
+      type: "RENDER_FRAMES",
+      scenes,
+      width,
+      height,
+      fps,
+    });
+  });
+}
+
+/* ── Main-thread fallback (original logic) ── */
+
+async function exportOnMainThread(
   scenes: SceneData[],
   options: VideoProcessorOptions,
   onProgress: (progress: number, status: string) => void
@@ -55,7 +171,7 @@ export async function exportWithWebCodecs(
 
   const totalDuration = scenes.reduce((a, s) => a + s.duration, 0);
   const totalFrames = Math.ceil(totalDuration * fps);
-  const frameDuration = 1_000_000 / fps; // microseconds
+  const frameDuration = 1_000_000 / fps;
 
   let globalFrame = 0;
 
@@ -74,7 +190,6 @@ export async function exportWithWebCodecs(
       if (globalFrame % 10 === 0) {
         const pct = Math.round((globalFrame / totalFrames) * 100);
         onProgress(5 + pct * 0.85, `جاري إنشاء الإطارات... ${pct}%`);
-        // yield to keep UI responsive
         await new Promise((r) => setTimeout(r, 0));
       }
     }
@@ -93,7 +208,7 @@ export async function exportWithWebCodecs(
   return url;
 }
 
-/* ── frame drawing (shared logic) ── */
+/* ── frame drawing (main-thread fallback) ── */
 
 function drawSceneFrame(
   ctx: CanvasRenderingContext2D,
@@ -104,18 +219,15 @@ function drawSceneFrame(
   height: number,
   fps: number
 ) {
-  // Background
   ctx.fillStyle = scene.bgColor;
   ctx.fillRect(0, 0, width, height);
 
-  // Radial gradient overlay
   const g = ctx.createRadialGradient(width * 0.3, height * 0.4, 0, width * 0.3, height * 0.4, width * 0.7);
   g.addColorStop(0, "rgba(255,255,255,0.08)");
   g.addColorStop(1, "transparent");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, width, height);
 
-  // Text animation
   let textOpacity = 1;
   let textY = height / 2;
   const fadeFrames = Math.min(fps * 0.5, sceneFrames * 0.2);
@@ -140,7 +252,6 @@ function drawSceneFrame(
   ctx.shadowBlur = 12;
   ctx.shadowOffsetY = 3;
 
-  // Word-wrap
   const maxW = width * 0.7;
   const words = scene.text.split(" ");
   const lines: string[] = [];
