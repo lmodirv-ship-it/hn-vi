@@ -178,7 +178,8 @@ export async function exportVideo(
 
   // Read output
   const data = await ffmpeg.readFile("output.mp4");
-  const videoBlob = new Blob([data], { type: "video/mp4" });
+  const uint8 = data instanceof Uint8Array ? data : new TextEncoder().encode(data as string);
+  const videoBlob = new Blob([uint8.buffer], { type: "video/mp4" });
   const url = URL.createObjectURL(videoBlob);
 
   // Cleanup frames
