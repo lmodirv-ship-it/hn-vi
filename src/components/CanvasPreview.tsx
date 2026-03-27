@@ -50,6 +50,11 @@ export default function CanvasPreview({ scenes, activeSceneId, onSceneChange, on
     aspectRatioValue,
   });
 
+  // Expose controls to parent
+  useEffect(() => {
+    onControlsReady?.({ isPlaying, currentTime, totalDuration, play, pause, restart, seek });
+  }, [isPlaying, currentTime, totalDuration, play, pause, restart, seek, onControlsReady]);
+
   // Sync scene changes back to parent
   if (currentSceneId !== activeSceneId && isPlaying) {
     onSceneChange(currentSceneId);
