@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,10 +9,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Progress } from "@/components/ui/progress";
 import {
   Play, Pause, Plus, Trash2, ChevronLeft, Download, GripVertical,
-  Type, Settings2, Eye, Film, Loader2
+  Type, Settings2, Eye, Film, Loader2, RotateCcw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportVideo, EXPORT_PRESETS, type SceneData } from "@/lib/ffmpeg";
+import CanvasPreview from "@/components/CanvasPreview";
 
 const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
