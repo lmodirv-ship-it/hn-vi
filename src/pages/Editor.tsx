@@ -81,15 +81,44 @@ export default function Editor() {
 
     try {
       const preset = EXPORT_PRESETS[exportPreset];
-      const url = await exportVideo(scenes, preset, (progress, status) => {
+      const progressCb = (progress: number, status: string) => {
         setExportProgress(progress);
         setExportStatus(status);
-      }, exportQuality, exportFormat);
+      };
 
-      // Trigger download
+      const bitrateMap: Record<VideoQuality, number> = {
+        low: 1_000_000, medium: 2_500_000, high: 5_000_000, ultra: 10_000_000,
+      };
+
+      // Determine method
+      let method = exportMethod;
+      if (method === "auto") {
+        method = supportsWebCodecs() ? "webcodecs" : "canvas";
+      }
+
+      let url: string;
+      let fileExt = exportFormat;
+
+      if (method === "webcodecs") {
+        url = await exportWithWebCodecs(scenes, {
+          width: preset.width, height: preset.height, fps: preset.fps,
+          bitrate: bitrateMap[exportQuality],
+        }, progressCb);
+        fileExt = "mp4";
+      } else if (method === "canvas") {
+        url = await exportWithCanvasRecorder(scenes, {
+          width: preset.width, height: preset.height, fps: preset.fps,
+          bitrate: bitrateMap[exportQuality],
+        }, progressCb);
+        fileExt = "webm";
+      } else {
+        url = await exportVideo(scenes, preset, progressCb, exportQuality, exportFormat);
+        fileExt = exportFormat;
+      }
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = `filmforge-video-${exportPreset}.${exportFormat}`;
+      a.download = `filmforge-video-${exportPreset}.${fileExt}`;
       a.click();
 
       toast({ title: "تم التصدير بنجاح!", description: `تم تصدير الفيديو بجودة ${preset.label}` });
