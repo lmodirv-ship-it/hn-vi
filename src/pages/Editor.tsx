@@ -47,6 +47,8 @@ export default function Editor() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
+  // TTS config
+  const [ttsConfig, setTTSConfig] = useState<TTSConfig>(DEFAULT_TTS_CONFIG);
   // Canvas animation controls
   const [canvasControls, setCanvasControls] = useState<{
     isPlaying: boolean; currentTime: number; totalDuration: number;
