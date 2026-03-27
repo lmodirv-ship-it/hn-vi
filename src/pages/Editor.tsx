@@ -234,6 +234,21 @@ export default function Editor() {
         </div>
       </div>
 
+      {/* Timeline */}
+      <Timeline
+        scenes={scenes}
+        currentTime={canvasControls?.currentTime ?? 0}
+        totalDuration={canvasControls?.totalDuration ?? totalDuration}
+        isPlaying={canvasControls?.isPlaying ?? false}
+        activeSceneId={activeScene}
+        onScenesChange={setScenes}
+        onSceneSelect={setActiveScene}
+        onSeek={(t) => canvasControls?.seek(t)}
+        onPlay={() => canvasControls?.play()}
+        onPause={() => canvasControls?.pause()}
+        onRestart={() => canvasControls?.restart()}
+      />
+
       {/* Export Dialog */}
       <Dialog open={showExport} onOpenChange={setShowExport}>
         <DialogContent>
