@@ -19,6 +19,8 @@ import CanvasPreview from "@/components/CanvasPreview";
 import { Timeline } from "@/components/timeline/Timeline";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import VoiceoverPanel from "@/components/VoiceoverPanel";
+import { type TTSConfig, DEFAULT_TTS_CONFIG } from "@/lib/ttsService";
 
 const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
