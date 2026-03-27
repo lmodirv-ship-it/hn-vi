@@ -273,6 +273,28 @@ export default function Editor() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">مستوى الجودة</label>
+                  <Select value={exportQuality} onValueChange={(v) => setExportQuality(v as VideoQuality)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">منخفضة (سريع)</SelectItem>
+                      <SelectItem value="medium">متوسطة</SelectItem>
+                      <SelectItem value="high">عالية (موصى به)</SelectItem>
+                      <SelectItem value="ultra">فائقة (بطيء)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">صيغة الملف</label>
+                  <Select value={exportFormat} onValueChange={(v) => setExportFormat(v as VideoFormat)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mp4">MP4 (موصى به)</SelectItem>
+                      <SelectItem value="webm">WebM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="rounded-lg border border-border bg-muted/50 p-4 text-sm">
                   <div className="flex justify-between mb-1">
                     <span className="text-muted-foreground">عدد المشاهد</span>
