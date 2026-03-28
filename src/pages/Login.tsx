@@ -40,7 +40,7 @@ export default function Login() {
     <div className="relative flex min-h-screen items-center justify-center p-4">
       <div className="gradient-hero absolute inset-0" />
       <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: 'radial-gradient(circle at 50% 30%, hsl(250 84% 54% / 0.3) 0%, transparent 50%)'
+        backgroundImage: 'radial-gradient(circle at 50% 30%, hsl(239 84% 67% / 0.3) 0%, transparent 50%)'
       }} />
 
       <Card className="relative w-full max-w-md border-border/50 bg-card/95 backdrop-blur-xl">
