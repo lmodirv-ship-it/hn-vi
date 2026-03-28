@@ -147,7 +147,7 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="relative overflow-hidden rounded-3xl gradient-hero p-12 text-center md:p-20">
             <div className="absolute inset-0 opacity-20" style={{
-              backgroundImage: 'radial-gradient(circle at 30% 50%, hsl(250 84% 54% / 0.4) 0%, transparent 50%)'
+              backgroundImage: 'radial-gradient(circle at 30% 50%, hsl(239 84% 67% / 0.4) 0%, transparent 50%)'
             }} />
             <div className="relative">
               <h2 className="mb-4 text-3xl font-bold text-primary-foreground md:text-5xl font-['Space_Grotesk']">
