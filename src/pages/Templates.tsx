@@ -2,8 +2,19 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Film, Crown, Sparkles } from "lucide-react";
+import { Crown, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import tplMarketing from "@/assets/tpl-marketing.jpg";
+import tplEducation from "@/assets/tpl-education.jpg";
+import tplSocial from "@/assets/tpl-social.jpg";
+import tplPresentation from "@/assets/tpl-presentation.jpg";
+
+const categoryImages: Record<string, string> = {
+  "تسويق": tplMarketing,
+  "تعليم": tplEducation,
+  "سوشيال ميديا": tplSocial,
+  "عرض تقديمي": tplPresentation,
+};
 
 const categories = ["الكل", "تسويق", "تعليم", "سوشيال ميديا", "عرض تقديمي"];
 
@@ -61,11 +72,15 @@ export default function Templates() {
             className="group overflow-hidden rounded-2xl glass-card transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/15"
           >
             <div className="relative aspect-video">
-              <div className="absolute inset-0 gradient-hero" />
-              <div className="absolute inset-0 gradient-mesh opacity-50" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Film className="h-9 w-9 text-primary-foreground/20 group-hover:scale-110 transition-transform" />
-              </div>
+              <img
+                src={categoryImages[t.category] ?? tplMarketing}
+                alt={t.name}
+                width={896}
+                height={512}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
               {t.premium && (
                 <Badge className="absolute top-2 right-2 gradient-accent border-0 text-accent-foreground shadow-lg">
                   <Crown className="ml-1 h-3 w-3" />
