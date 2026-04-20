@@ -232,8 +232,15 @@ export default function Index() {
                 transition={{ delay: (i % 3) * 0.1 }}
                 className="group glass-card relative overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-1 hover:border-primary/40"
               >
-                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl gradient-primary shadow-lg shadow-primary/30 group-hover:shadow-primary/60 transition-all">
-                  <f.icon className="h-6 w-6 text-primary-foreground" />
+                <div className="mb-5 h-16 w-16 overflow-hidden rounded-xl ring-1 ring-white/10 shadow-lg shadow-primary/20 group-hover:shadow-primary/50 transition-all">
+                  <img
+                    src={f.image}
+                    alt={f.title}
+                    width={512}
+                    height={512}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold font-['Space_Grotesk']">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
