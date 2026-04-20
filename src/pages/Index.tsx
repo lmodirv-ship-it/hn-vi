@@ -6,6 +6,7 @@ import {
   Wand2, Globe2, Cpu, ShieldCheck, Rocket, ArrowLeft, Star,
 } from "lucide-react";
 import AuroraBackground from "@/components/futuristic/AuroraBackground";
+import ctaRocket from "@/assets/cta-rocket.jpg";
 
 const features = [
   { icon: Wand2, title: "محرر ذكي بالـ AI", description: "ذكاء اصطناعي يقترح المشاهد والانتقالات والأصوات تلقائيًا حسب نصك" },
