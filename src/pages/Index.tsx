@@ -2,22 +2,30 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  Play, Sparkles, Layers, Download, Zap, Film, Type, Music,
-  Wand2, Globe2, Cpu, ShieldCheck, Rocket, ArrowLeft, Star,
+  Play, Sparkles, Zap, Film, Cpu, ArrowLeft, Star,
 } from "lucide-react";
 import AuroraBackground from "@/components/futuristic/AuroraBackground";
 import ctaRocket from "@/assets/cta-rocket.jpg";
+import featAi from "@/assets/feat-ai.jpg";
+import featTemplates from "@/assets/feat-templates.jpg";
+import featPreview from "@/assets/feat-preview.jpg";
+import featVoice from "@/assets/feat-voice.jpg";
+import featEffects from "@/assets/feat-effects.jpg";
+import featGpu from "@/assets/feat-gpu.jpg";
+import featPublish from "@/assets/feat-publish.jpg";
+import featSecurity from "@/assets/feat-security.jpg";
+import featCollab from "@/assets/feat-collab.jpg";
 
 const features = [
-  { icon: Wand2, title: "محرر ذكي بالـ AI", description: "ذكاء اصطناعي يقترح المشاهد والانتقالات والأصوات تلقائيًا حسب نصك" },
-  { icon: Layers, title: "+200 قالب احترافي", description: "مكتبة ضخمة من القوالب السينمائية لجميع المنصات والصناعات" },
-  { icon: Film, title: "معاينة فورية 4K", description: "شاهد فيلمك مباشرة بدقة عالية مع تأثيرات وتحولات سينمائية متقدمة" },
-  { icon: Music, title: "أصوات بـ 50 لغة", description: "تحويل النص لكلام طبيعي بأصوات بشرية واقعية ومكتبة موسيقى ضخمة" },
-  { icon: Sparkles, title: "تأثيرات هوليوود", description: "particles، glow، 3D camera، motion blur، LUTs سينمائية احترافية" },
-  { icon: Cpu, title: "تصدير GPU سريع", description: "تصدير 1080p/4K بضغط ذكي وجودة لا تضاهى في ثوانٍ معدودة" },
-  { icon: Globe2, title: "نشر مباشر للمنصات", description: "انشر مباشرة على YouTube، TikTok، Instagram، X من داخل المحرر" },
-  { icon: ShieldCheck, title: "خصوصية تامة", description: "تشفير كامل، RLS، نسخ احتياطية تلقائية على السحابة الآمنة" },
-  { icon: Rocket, title: "تعاون لحظي", description: "اعمل مع فريقك بنفس الوقت — تعليقات، نسخ، صلاحيات متقدمة" },
+  { image: featAi, title: "محرر ذكي بالـ AI", description: "ذكاء اصطناعي يقترح المشاهد والانتقالات والأصوات تلقائيًا حسب نصك" },
+  { image: featTemplates, title: "+200 قالب احترافي", description: "مكتبة ضخمة من القوالب السينمائية لجميع المنصات والصناعات" },
+  { image: featPreview, title: "معاينة فورية 4K", description: "شاهد فيلمك مباشرة بدقة عالية مع تأثيرات وتحولات سينمائية متقدمة" },
+  { image: featVoice, title: "أصوات بـ 50 لغة", description: "تحويل النص لكلام طبيعي بأصوات بشرية واقعية ومكتبة موسيقى ضخمة" },
+  { image: featEffects, title: "تأثيرات هوليوود", description: "particles، glow، 3D camera، motion blur، LUTs سينمائية احترافية" },
+  { image: featGpu, title: "تصدير GPU سريع", description: "تصدير 1080p/4K بضغط ذكي وجودة لا تضاهى في ثوانٍ معدودة" },
+  { image: featPublish, title: "نشر مباشر للمنصات", description: "انشر مباشرة على YouTube، TikTok، Instagram، X من داخل المحرر" },
+  { image: featSecurity, title: "خصوصية تامة", description: "تشفير كامل، RLS، نسخ احتياطية تلقائية على السحابة الآمنة" },
+  { image: featCollab, title: "تعاون لحظي", description: "اعمل مع فريقك بنفس الوقت — تعليقات، نسخ، صلاحيات متقدمة" },
 ];
 
 const steps = [
@@ -224,8 +232,15 @@ export default function Index() {
                 transition={{ delay: (i % 3) * 0.1 }}
                 className="group glass-card relative overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-1 hover:border-primary/40"
               >
-                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl gradient-primary shadow-lg shadow-primary/30 group-hover:shadow-primary/60 transition-all">
-                  <f.icon className="h-6 w-6 text-primary-foreground" />
+                <div className="mb-5 h-16 w-16 overflow-hidden rounded-xl ring-1 ring-white/10 shadow-lg shadow-primary/20 group-hover:shadow-primary/50 transition-all">
+                  <img
+                    src={f.image}
+                    alt={f.title}
+                    width={512}
+                    height={512}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold font-['Space_Grotesk']">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
