@@ -3,14 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Play, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Play, Mail, Lock, User, ArrowRight, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import AuroraBackground from "@/components/futuristic/AuroraBackground";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [adminMode, setAdminMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -23,7 +25,14 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      if (isSignUp) {
+      if (adminMode) {
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+        });
+        if (error) throw error;
+        toast({ title: "تم إرسال الرابط!", description: "تحقق من بريدك الإلكتروني للدخول كمدير" });
+      } else if (isSignUp) {
         await signUp(email, password, name);
         toast({ title: "تم إنشاء الحساب!", description: "تحقق من بريدك الإلكتروني لتأكيد الحساب" });
       } else {
