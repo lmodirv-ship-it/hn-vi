@@ -48,6 +48,11 @@
     --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%), hsl(260 80% 60%));
     --gradient-accent: linear-gradient(135deg, hsl(168 76% 42%), hsl(190 70% 50%));
     --gradient-hero: linear-gradient(160deg, hsl(0 0% 0%) 0%, hsl(239 30% 12%) 50%, hsl(260 25% 10%) 100%);
+    --gradient-mesh: radial-gradient(at 20% 20%, hsl(239 84% 67% / 0.35) 0%, transparent 50%), radial-gradient(at 80% 30%, hsl(260 80% 60% / 0.25) 0%, transparent 50%), radial-gradient(at 50% 90%, hsl(168 76% 42% / 0.2) 0%, transparent 50%);
+    --glass-bg: hsl(240 6% 10% / 0.55);
+    --glass-border: hsl(0 0% 100% / 0.08);
+    --glow-primary: 0 0 40px hsl(239 84% 67% / 0.45);
+    --glow-accent: 0 0 40px hsl(168 76% 42% / 0.4);
   }
 
   .dark {
@@ -120,5 +125,57 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  .gradient-mesh {
+    background-image: var(--gradient-mesh);
+  }
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+  }
+  .glass-strong {
+    background: hsl(240 6% 8% / 0.7);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border: 1px solid hsl(0 0% 100% / 0.1);
+  }
+  .glass-card {
+    background: linear-gradient(135deg, hsl(0 0% 100% / 0.06) 0%, hsl(0 0% 100% / 0.02) 100%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.4), inset 0 1px 0 hsl(0 0% 100% / 0.05);
+  }
+  .glow-primary { box-shadow: var(--glow-primary); }
+  .glow-accent { box-shadow: var(--glow-accent); }
+  .noise-overlay {
+    position: relative;
+  }
+  .noise-overlay::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.04; pointer-events: none; mix-blend-mode: overlay;
+  }
+  @keyframes float-slow {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -40px) scale(1.05); }
+  }
+  @keyframes float-slower {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-40px, 30px) scale(1.08); }
+  }
+  .animate-float-slow { animation: float-slow 12s ease-in-out infinite; }
+  .animate-float-slower { animation: float-slower 16s ease-in-out infinite; }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .shimmer {
+    background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.08), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
   }
 }

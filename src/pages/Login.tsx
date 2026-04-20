@@ -3,10 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Mail, Lock, User } from "lucide-react";
+import { Play, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion } from "framer-motion";
+import AuroraBackground from "@/components/futuristic/AuroraBackground";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -37,62 +38,66 @@ export default function Login() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center p-4">
-      <div className="gradient-hero absolute inset-0" />
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: 'radial-gradient(circle at 50% 30%, hsl(239 84% 67% / 0.3) 0%, transparent 50%)'
-      }} />
+    <div dir="rtl" className="relative flex min-h-screen items-center justify-center p-4">
+      <AuroraBackground />
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative w-full max-w-md"
+      >
+        <div className="absolute -inset-4 gradient-primary opacity-30 blur-3xl rounded-3xl" />
+        <div className="relative glass-card rounded-3xl p-8">
+          <div className="text-center">
+            <Link to="/" className="mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary glow-primary">
+              <Play className="h-6 w-6 fill-primary-foreground text-primary-foreground" />
+            </Link>
+            <h1 className="text-2xl font-bold font-['Space_Grotesk']">
+              {isSignUp ? "أهلًا بك في FilmForge" : "مرحبًا بعودتك"}
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {isSignUp ? "أنشئ حسابك وابدأ صناعة المستحيل" : "سجل دخولك للمتابعة"}
+            </p>
+          </div>
 
-      <Card className="relative w-full max-w-md border-border/50 bg-card/95 backdrop-blur-xl">
-        <CardHeader className="text-center">
-          <Link to="/" className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl gradient-primary">
-            <Play className="h-5 w-5 text-primary-foreground" />
-          </Link>
-          <CardTitle className="text-2xl font-['Space_Grotesk']">
-            {isSignUp ? "إنشاء حساب جديد" : "تسجيل الدخول"}
-          </CardTitle>
-          <CardDescription>
-            {isSignUp ? "أنشئ حسابك وابدأ بإنشاء أفلامك" : "مرحبًا بعودتك! سجل الدخول للمتابعة"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="mt-7 space-y-4">
             {isSignUp && (
               <div className="space-y-2">
                 <Label htmlFor="name">الاسم الكامل</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="name" placeholder="أحمد محمد" value={name} onChange={(e) => setName(e.target.value)} className="pl-10" />
+                  <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input id="name" placeholder="أحمد محمد" value={name} onChange={(e) => setName(e.target.value)} className="pr-10 glass border-white/10" />
                 </div>
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">البريد الإلكتروني</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" required />
+                <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-10 glass border-white/10" required />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">كلمة المرور</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10" required minLength={6} />
+                <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pr-10 glass border-white/10" required minLength={6} />
               </div>
             </div>
-            <Button type="submit" className="w-full gradient-primary border-0 text-primary-foreground" disabled={isLoading}>
+            <Button type="submit" size="lg" className="w-full gradient-primary border-0 text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/60 transition-all" disabled={isLoading}>
               {isLoading ? "جاري التحميل..." : isSignUp ? "إنشاء الحساب" : "تسجيل الدخول"}
+              {!isLoading && <ArrowRight className="mr-2 h-4 w-4 rtl:rotate-180" />}
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-muted-foreground">
+          <div className="mt-7 text-center text-sm text-muted-foreground">
             {isSignUp ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟"}{" "}
             <button onClick={() => setIsSignUp(!isSignUp)} className="font-medium text-primary hover:underline">
               {isSignUp ? "سجل الدخول" : "أنشئ حساب"}
             </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </motion.div>
     </div>
   );
 }

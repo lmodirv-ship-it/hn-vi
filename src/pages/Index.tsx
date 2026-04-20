@@ -1,182 +1,331 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, Sparkles, Layers, Download, Zap, Film, Type, Music } from "lucide-react";
+import {
+  Play, Sparkles, Layers, Download, Zap, Film, Type, Music,
+  Wand2, Globe2, Cpu, ShieldCheck, Rocket, ArrowLeft, Star,
+} from "lucide-react";
+import AuroraBackground from "@/components/futuristic/AuroraBackground";
 
 const features = [
-  {
-    icon: Type,
-    title: "محرر نصوص ذكي",
-    description: "اكتب السيناريو الخاص بك مع تنظيم المشاهد والتعليقات التوضيحية تلقائيًا",
-  },
-  {
-    icon: Layers,
-    title: "قوالب احترافية",
-    description: "مكتبة قوالب جاهزة للتسويق والتعليم ووسائل التواصل الاجتماعي",
-  },
-  {
-    icon: Film,
-    title: "معاينة فورية",
-    description: "شاهد الفيديو مباشرة أثناء التحرير مع تأثيرات وانتقالات متقدمة",
-  },
-  {
-    icon: Music,
-    title: "صوت بالذكاء الاصطناعي",
-    description: "تحويل النص إلى كلام طبيعي بلغات متعددة مع موسيقى خلفية",
-  },
-  {
-    icon: Sparkles,
-    title: "تأثيرات متقدمة",
-    description: "رسوم متحركة وانتقالات سينمائية تضفي طابعًا احترافيًا على أفلامك",
-  },
-  {
-    icon: Download,
-    title: "تصدير بجودة عالية",
-    description: "صدّر الفيديو بجودة 720p أو 1080p جاهزًا للنشر على أي منصة",
-  },
+  { icon: Wand2, title: "محرر ذكي بالـ AI", description: "ذكاء اصطناعي يقترح المشاهد والانتقالات والأصوات تلقائيًا حسب نصك" },
+  { icon: Layers, title: "+200 قالب احترافي", description: "مكتبة ضخمة من القوالب السينمائية لجميع المنصات والصناعات" },
+  { icon: Film, title: "معاينة فورية 4K", description: "شاهد فيلمك مباشرة بدقة عالية مع تأثيرات وتحولات سينمائية متقدمة" },
+  { icon: Music, title: "أصوات بـ 50 لغة", description: "تحويل النص لكلام طبيعي بأصوات بشرية واقعية ومكتبة موسيقى ضخمة" },
+  { icon: Sparkles, title: "تأثيرات هوليوود", description: "particles، glow، 3D camera، motion blur، LUTs سينمائية احترافية" },
+  { icon: Cpu, title: "تصدير GPU سريع", description: "تصدير 1080p/4K بضغط ذكي وجودة لا تضاهى في ثوانٍ معدودة" },
+  { icon: Globe2, title: "نشر مباشر للمنصات", description: "انشر مباشرة على YouTube، TikTok، Instagram، X من داخل المحرر" },
+  { icon: ShieldCheck, title: "خصوصية تامة", description: "تشفير كامل، RLS، نسخ احتياطية تلقائية على السحابة الآمنة" },
+  { icon: Rocket, title: "تعاون لحظي", description: "اعمل مع فريقك بنفس الوقت — تعليقات، نسخ، صلاحيات متقدمة" },
 ];
 
 const steps = [
-  { num: "01", title: "اكتب النص", desc: "أدخل السيناريو أو النص الذي تريد تحويله إلى فيديو" },
-  { num: "02", title: "صمم المشاهد", desc: "اختر القوالب والألوان والخطوط والتأثيرات المناسبة" },
-  { num: "03", title: "أضف الصوت", desc: "استخدم التعليق الصوتي بالذكاء الاصطناعي أو ارفع صوتك" },
-  { num: "04", title: "صدّر وانشر", desc: "حمّل الفيديو بالجودة التي تريدها وشاركه مع العالم" },
+  { num: "01", title: "اكتب فكرتك", desc: "أدخل النص أو اطلب من الـ AI كتابة سيناريو كامل لك" },
+  { num: "02", title: "صمّم بصريًا", desc: "اختر القالب، الألوان، الخطوط، والتأثيرات بنقرة واحدة" },
+  { num: "03", title: "أضف الصوت", desc: "تعليق صوتي ذكي بأي لغة + موسيقى تلقائية تناسب الإيقاع" },
+  { num: "04", title: "صدّر وانشر", desc: "صدّر بدقة 4K أو انشر مباشرة على جميع منصاتك" },
 ];
+
+const stats = [
+  { value: "+250K", label: "مبدع نشط" },
+  { value: "+5M", label: "فيديو منتج" },
+  { value: "98%", label: "رضا العملاء" },
+  { value: "50+", label: "لغة مدعومة" },
+];
+
+const testimonials = [
+  { name: "ليلى أحمد", role: "صانعة محتوى", quote: "غيّر طريقة عملي بالكامل. أنتج فيديوهات احترافية بنصف الوقت." },
+  { name: "كريم سعيد", role: "مدير تسويق", quote: "أفضل أداة رأيتها لإنتاج إعلانات متعددة بسرعة وجودة عالية." },
+  { name: "سارة العتيبي", role: "معلمة", quote: "طلابي أصبحوا متحمسين أكثر مع الدروس المرئية. شكرًا FilmForge!" },
+];
+
+const fadeUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-50px" },
+};
 
 export default function Index() {
   return (
-    <div className="min-h-screen bg-background">
+    <div dir="rtl" className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+      <AuroraBackground />
+
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
-              <Play className="h-4 w-4 text-primary-foreground" />
+      <nav className="fixed top-0 left-0 right-0 z-50">
+        <div className="container mx-auto px-4 pt-4">
+          <div className="glass-card mx-auto flex h-16 items-center justify-between rounded-2xl px-5">
+            <Link to="/" className="flex items-center gap-2.5">
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl gradient-primary glow-primary">
+                <Play className="h-4 w-4 fill-primary-foreground text-primary-foreground" />
+              </div>
+              <span className="text-lg font-bold tracking-tight font-['Space_Grotesk']">FilmForge</span>
+              <span className="hidden sm:inline-block rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary-foreground/80">AI</span>
+            </Link>
+            <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
+              <a href="#features" className="hover:text-foreground transition-colors">المميزات</a>
+              <a href="#how" className="hover:text-foreground transition-colors">كيف يعمل</a>
+              <a href="#pricing" className="hover:text-foreground transition-colors">الأسعار</a>
             </div>
-            <span className="text-xl font-bold font-['Space_Grotesk']">FilmForge</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">تسجيل الدخول</Button>
-            </Link>
-            <Link to="/login">
-              <Button size="sm" className="gradient-primary border-0 text-primary-foreground">
-                ابدأ مجانًا
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/login"><Button variant="ghost" size="sm">دخول</Button></Link>
+              <Link to="/login">
+                <Button size="sm" className="gradient-primary border-0 text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all">
+                  ابدأ مجانًا
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="relative overflow-hidden pt-16">
-        <div className="gradient-hero absolute inset-0" />
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: 'radial-gradient(circle at 20% 50%, hsl(239 84% 67% / 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, hsl(168 76% 42% / 0.2) 0%, transparent 40%)'
-        }} />
-        <div className="relative container mx-auto flex min-h-[90vh] flex-col items-center justify-center px-4 text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary-foreground/80">
-            <Zap className="h-3.5 w-3.5" />
-            <span>مدعوم بالذكاء الاصطناعي</span>
-          </div>
-          <h1 className="mb-6 max-w-4xl text-5xl font-bold leading-tight tracking-tight text-primary-foreground md:text-7xl font-['Space_Grotesk']">
-            حوّل أفكارك إلى{" "}
-            <span className="text-gradient">أفلام احترافية</span>
-          </h1>
-          <p className="mb-10 max-w-2xl text-lg text-primary-foreground/60 md:text-xl">
-            اكتب النص وشاهد كيف يتحول إلى فيديو سينمائي بتأثيرات متقدمة وصوت بالذكاء الاصطناعي — في دقائق وليس أيام
-          </p>
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <Link to="/login">
-              <Button size="lg" className="gradient-primary border-0 text-primary-foreground px-8 text-base h-12">
-                <Sparkles className="mr-2 h-5 w-5" />
-                ابدأ الإنشاء مجانًا
+      <section className="relative pt-32 pb-24">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-5xl text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-7 inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs"
+            >
+              <Zap className="h-3.5 w-3.5 text-accent" />
+              <span className="text-foreground/90">منصة الجيل القادم لصناعة الأفلام بالذكاء الاصطناعي</span>
+              <span className="rounded-full gradient-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">جديد</span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="mb-6 text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl lg:text-[88px] font-['Space_Grotesk']"
+            >
+              حوّل أفكارك إلى
+              <br />
+              <span className="text-gradient inline-block">أفلام من المستقبل</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed"
+            >
+              منصة سينمائية متكاملة تجمع أقوى مميزات أفضل أدوات العالم —
+              ذكاء اصطناعي، تعاون لحظي، تأثيرات هوليوود، ونشر بنقرة واحدة.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-col items-center justify-center gap-3 sm:flex-row"
+            >
+              <Link to="/login">
+                <Button size="lg" className="gradient-primary border-0 text-primary-foreground h-13 px-8 text-base shadow-xl shadow-primary/40 hover:shadow-primary/60 transition-all">
+                  <Sparkles className="ml-2 h-5 w-5" />
+                  ابدأ الإنشاء مجانًا
+                </Button>
+              </Link>
+              <Button size="lg" variant="outline" className="h-13 px-8 glass border-white/10 hover:bg-white/5">
+                <Play className="ml-2 h-5 w-5" />
+                شاهد العرض (1:30)
               </Button>
-            </Link>
-            <Button size="lg" variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 h-12 px-8">
-              <Play className="mr-2 h-5 w-5" />
-              شاهد العرض التوضيحي
-            </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground"
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-accent text-accent" />)}</div>
+                <span>4.9/5 — أكثر من 12 ألف تقييم</span>
+              </div>
+              <span className="hidden sm:block">•</span>
+              <span>بدون بطاقة ائتمان</span>
+              <span className="hidden sm:block">•</span>
+              <span>إلغاء في أي وقت</span>
+            </motion.div>
+          </div>
+
+          {/* Hero preview frame */}
+          <motion.div
+            initial={{ opacity: 0, y: 60, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.9, delay: 0.5 }}
+            className="relative mx-auto mt-20 max-w-6xl"
+          >
+            <div className="absolute -inset-4 gradient-primary opacity-30 blur-3xl rounded-3xl" />
+            <div className="relative glass-card overflow-hidden rounded-2xl">
+              <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
+                <div className="flex gap-1.5">
+                  <span className="h-3 w-3 rounded-full bg-destructive/70" />
+                  <span className="h-3 w-3 rounded-full bg-accent/70" />
+                  <span className="h-3 w-3 rounded-full bg-primary/70" />
+                </div>
+                <div className="ms-3 flex-1 text-center text-xs text-muted-foreground">FilmForge Studio — مشروع جديد</div>
+              </div>
+              <div className="aspect-video relative gradient-hero flex items-center justify-center">
+                <div className="absolute inset-0 gradient-mesh opacity-60" />
+                <div className="relative flex flex-col items-center gap-4">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full glass glow-primary">
+                    <Play className="h-8 w-8 fill-primary-foreground text-primary-foreground" />
+                  </div>
+                  <p className="text-sm text-foreground/70 font-['Space_Grotesk']">معاينة Studio Editor</p>
+                </div>
+                {/* floating UI chips */}
+                <div className="absolute top-6 right-6 glass rounded-xl px-3 py-2 text-xs">
+                  <Cpu className="inline h-3 w-3 ml-1 text-accent" /> AI يفكر...
+                </div>
+                <div className="absolute bottom-6 left-6 glass rounded-xl px-3 py-2 text-xs">
+                  <Film className="inline h-3 w-3 ml-1 text-primary" /> 12 مشهد • 4K
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="relative py-16">
+        <div className="container mx-auto px-4">
+          <div className="glass-card rounded-3xl p-8 md:p-10">
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+              {stats.map((s, i) => (
+                <motion.div key={s.label} {...fadeUp} transition={{ delay: i * 0.1 }} className="text-center">
+                  <div className="text-4xl font-bold text-gradient md:text-5xl font-['Space_Grotesk']">{s.value}</div>
+                  <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-24">
+      <section id="features" className="relative py-24">
         <div className="container mx-auto px-4">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-3xl font-bold md:text-4xl font-['Space_Grotesk']">كل ما تحتاجه لإنشاء أفلام مذهلة</h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">أدوات احترافية مصممة لتحويل نصوصك إلى فيديوهات سينمائية بسهولة</p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((f) => (
-              <div key={f.title} className="group rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg gradient-primary">
+          <motion.div {...fadeUp} className="mb-16 text-center">
+            <span className="rounded-full glass px-3 py-1 text-xs text-foreground/70">المميزات</span>
+            <h2 className="mt-4 text-4xl font-bold md:text-5xl font-['Space_Grotesk']">
+              كل ما تحتاجه — <span className="text-gradient">وأكثر</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              جمعنا أقوى مميزات المنصات العالمية في مكان واحد، وأضفنا لمساتنا السحرية
+            </p>
+          </motion.div>
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {features.map((f, i) => (
+              <motion.div
+                key={f.title}
+                {...fadeUp}
+                transition={{ delay: (i % 3) * 0.1 }}
+                className="group glass-card relative overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-1 hover:border-primary/40"
+              >
+                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl gradient-primary shadow-lg shadow-primary/30 group-hover:shadow-primary/60 transition-all">
                   <f.icon className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold font-['Space_Grotesk']">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
-              </div>
+                <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section className="border-y border-border bg-muted/50 py-24">
+      <section id="how" className="relative py-24">
         <div className="container mx-auto px-4">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-3xl font-bold md:text-4xl font-['Space_Grotesk']">كيف يعمل؟</h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">أربع خطوات بسيطة لتحويل نصك إلى فيلم احترافي</p>
-          </div>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s) => (
-              <div key={s.num} className="text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary text-2xl font-bold text-primary-foreground font-['Space_Grotesk']">
-                  {s.num}
+          <motion.div {...fadeUp} className="mb-16 text-center">
+            <span className="rounded-full glass px-3 py-1 text-xs text-foreground/70">كيف يعمل</span>
+            <h2 className="mt-4 text-4xl font-bold md:text-5xl font-['Space_Grotesk']">
+              من فكرة إلى فيلم في <span className="text-gradient">4 خطوات</span>
+            </h2>
+          </motion.div>
+          <div className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="absolute top-10 left-0 right-0 hidden h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent lg:block" />
+            {steps.map((s, i) => (
+              <motion.div key={s.num} {...fadeUp} transition={{ delay: i * 0.12 }} className="relative">
+                <div className="glass-card relative rounded-2xl p-6 text-center">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary text-xl font-bold text-primary-foreground shadow-lg shadow-primary/40 font-['Space_Grotesk']">
+                    {s.num}
+                  </div>
+                  <h3 className="mb-2 text-lg font-semibold font-['Space_Grotesk']">{s.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
                 </div>
-                <h3 className="mb-2 text-lg font-semibold font-['Space_Grotesk']">{s.title}</h3>
-                <p className="text-sm text-muted-foreground">{s.desc}</p>
-              </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="relative py-24">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="mb-16 text-center">
+            <span className="rounded-full glass px-3 py-1 text-xs text-foreground/70">آراء المبدعين</span>
+            <h2 className="mt-4 text-4xl font-bold md:text-5xl font-['Space_Grotesk']">
+              يحبه أكثر من <span className="text-gradient">250 ألف</span> صانع محتوى
+            </h2>
+          </motion.div>
+          <div className="grid gap-5 md:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <motion.div key={t.name} {...fadeUp} transition={{ delay: i * 0.1 }} className="glass-card rounded-2xl p-6">
+                <div className="mb-4 flex">{[...Array(5)].map((_, k) => <Star key={k} className="h-4 w-4 fill-accent text-accent" />)}</div>
+                <p className="mb-5 text-sm leading-relaxed text-foreground/85">"{t.quote}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full gradient-primary text-sm font-bold text-primary-foreground">
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold font-['Space_Grotesk']">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-24">
+      <section className="relative py-24">
         <div className="container mx-auto px-4">
-          <div className="relative overflow-hidden rounded-3xl gradient-hero p-12 text-center md:p-20">
-            <div className="absolute inset-0 opacity-20" style={{
-              backgroundImage: 'radial-gradient(circle at 30% 50%, hsl(239 84% 67% / 0.4) 0%, transparent 50%)'
-            }} />
+          <motion.div {...fadeUp} className="relative overflow-hidden rounded-3xl glass-strong p-12 text-center md:p-20">
+            <div className="absolute inset-0 gradient-mesh opacity-60" />
             <div className="relative">
-              <h2 className="mb-4 text-3xl font-bold text-primary-foreground md:text-5xl font-['Space_Grotesk']">
-                جاهز لإنشاء فيلمك الأول؟
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary glow-primary">
+                <Rocket className="h-7 w-7 text-primary-foreground" />
+              </div>
+              <h2 className="mb-4 text-4xl font-bold md:text-6xl font-['Space_Grotesk']">
+                جاهز لصنع <span className="text-gradient">المستحيل</span>؟
               </h2>
-              <p className="mx-auto mb-8 max-w-xl text-primary-foreground/60">
-                انضم إلى آلاف المبدعين الذين يستخدمون FilmForge لتحويل أفكارهم إلى واقع
+              <p className="mx-auto mb-8 max-w-xl text-muted-foreground md:text-lg">
+                انضم لآلاف المبدعين وابدأ رحلتك مع منصة الجيل القادم — مجانًا
               </p>
               <Link to="/login">
-                <Button size="lg" className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90 h-12 px-8">
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  ابدأ الآن مجانًا
+                <Button size="lg" className="gradient-primary border-0 text-primary-foreground h-13 px-10 text-base shadow-xl shadow-primary/40 hover:shadow-primary/70 transition-all">
+                  ابدأ الآن
+                  <ArrowLeft className="mr-2 h-5 w-5" />
                 </Button>
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <div className="container mx-auto flex items-center justify-between px-4 text-sm text-muted-foreground">
+      <footer className="relative border-t border-white/5 py-10">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 text-sm text-muted-foreground sm:flex-row">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-md gradient-primary">
               <Play className="h-3 w-3 text-primary-foreground" />
             </div>
             <span className="font-semibold text-foreground font-['Space_Grotesk']">FilmForge</span>
           </div>
-          <span>© 2026 FilmForge. جميع الحقوق محفوظة.</span>
+          <span>© 2026 FilmForge — صُنع بشغف للمبدعين</span>
         </div>
       </footer>
     </div>
