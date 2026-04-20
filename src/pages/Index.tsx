@@ -297,8 +297,15 @@ export default function Index() {
           <motion.div {...fadeUp} className="relative overflow-hidden rounded-3xl glass-strong p-12 text-center md:p-20">
             <div className="absolute inset-0 gradient-mesh opacity-60" />
             <div className="relative">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary glow-primary">
-                <Rocket className="h-7 w-7 text-primary-foreground" />
+              <div className="mx-auto mb-6 h-20 w-20 overflow-hidden rounded-2xl ring-1 ring-white/15 glow-primary">
+                <img
+                  src={ctaRocket}
+                  alt="صاروخ ينطلق"
+                  width={512}
+                  height={512}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
               </div>
               <h2 className="mb-4 text-4xl font-bold md:text-6xl font-['Space_Grotesk']">
                 جاهز لصنع <span className="text-gradient">المستحيل</span>؟
