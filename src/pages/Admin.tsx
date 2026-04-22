@@ -224,7 +224,7 @@ export default function Admin() {
                         {p.banned ? (
                           <Badge variant="destructive"><Ban className="ml-1 h-3 w-3" />محظور</Badge>
                         ) : (
-                          <Badge variant="outline" className="border-emerald-500/30 text-emerald-400"><CheckCircle2 className="ml-1 h-3 w-3" />نشط</Badge>
+                          <Badge variant="outline" className="border-primary/30 text-primary"><CheckCircle2 className="ml-1 h-3 w-3" />نشط</Badge>
                         )}
                       </TableCell>
                       <TableCell>
