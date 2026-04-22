@@ -536,6 +536,7 @@ export default function Index() {
 
       {/* CTA */}
       <section className="relative py-24">
+      {/* This comment is replaced below */}
         <div className="container mx-auto px-4">
           <motion.div {...fadeUp} className="relative">
             {/* Diamond glow halo */}
