@@ -451,31 +451,84 @@ export default function Index() {
       {/* CTA */}
       <section className="relative py-24">
         <div className="container mx-auto px-4">
-          <motion.div {...fadeUp} className="relative overflow-hidden rounded-3xl glass-strong p-12 text-center md:p-20">
-            <div className="absolute inset-0 gradient-mesh opacity-60" />
-            <div className="relative">
-              <div className="mx-auto mb-6 h-20 w-20 overflow-hidden rounded-2xl ring-1 ring-white/15 glow-primary">
+          <motion.div {...fadeUp} className="relative">
+            {/* Diamond glow halo */}
+            <div className="absolute -inset-8 gradient-primary opacity-30 blur-[120px] rounded-[3rem]" />
+
+            <div className="relative overflow-hidden rounded-[2.5rem] glass-strong ring-1 ring-white/10 p-10 text-center md:p-20">
+              {/* Background image */}
+              <div className="absolute inset-0">
                 <img
                   src={ctaRocket}
-                  alt="صاروخ ينطلق"
-                  width={512}
-                  height={512}
-                  loading="lazy"
-                  className="h-full w-full object-cover"
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover opacity-20"
                 />
+                <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background/90" />
+                <div className="absolute inset-0 gradient-mesh opacity-50" />
               </div>
-              <h2 className="mb-4 text-4xl font-bold md:text-6xl font-['Space_Grotesk']">
-                جاهز لصنع <span className="text-gradient">المستحيل</span>؟
-              </h2>
-              <p className="mx-auto mb-8 max-w-xl text-muted-foreground md:text-lg">
-                انضم لآلاف المبدعين وابدأ رحلتك مع منصة الجيل القادم — مجانًا
-              </p>
-              <Link to="/login">
-                <Button size="lg" className="gradient-primary border-0 text-primary-foreground h-13 px-10 text-base shadow-xl shadow-primary/40 hover:shadow-primary/70 transition-all">
-                  ابدأ الآن
-                  <ArrowLeft className="mr-2 h-5 w-5" />
-                </Button>
-              </Link>
+
+              {/* Floating diamonds */}
+              <div className="pointer-events-none absolute top-10 right-10 h-20 w-20 rotate-45 gradient-primary opacity-20 blur-xl" />
+              <div className="pointer-events-none absolute bottom-10 left-10 h-24 w-24 rotate-45 bg-accent/30 blur-xl" />
+              <div className="pointer-events-none absolute top-1/2 left-1/4 h-12 w-12 -translate-y-1/2 rotate-45 bg-primary/40 blur-lg" />
+
+              <div className="relative mx-auto max-w-3xl">
+                {/* Diamond logo */}
+                <motion.div
+                  initial={{ scale: 0, rotate: 0 }}
+                  whileInView={{ scale: 1, rotate: 360 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="mx-auto mb-8 flex h-24 w-24 rotate-45 items-center justify-center rounded-2xl gradient-primary shadow-2xl shadow-primary/60"
+                >
+                  <Sparkles className="h-10 w-10 -rotate-45 text-primary-foreground" />
+                </motion.div>
+
+                <h2 className="mb-5 text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl font-['Space_Grotesk']">
+                  ابدأ صناعة
+                  <br />
+                  <span className="text-gradient">المستقبل اليوم</span>
+                </h2>
+                <p className="mx-auto mb-10 max-w-xl text-base text-muted-foreground md:text-lg leading-relaxed">
+                  انضم لـ <span className="font-bold text-foreground">+250,000</span> مبدع يصنعون أفلاماً سينمائية بذكاء اصطناعي.
+                  لا حاجة لبطاقة ائتمان — فقط أفكارك.
+                </p>
+
+                <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <Link to="/login">
+                    <Button
+                      size="lg"
+                      className="group gradient-primary border-0 text-primary-foreground h-14 px-10 text-base shadow-2xl shadow-primary/50 hover:shadow-primary/80 transition-all hover:-translate-y-0.5"
+                    >
+                      <Sparkles className="ml-2 h-5 w-5 transition-transform group-hover:rotate-12" />
+                      ابدأ مجاناً الآن
+                      <ArrowLeft className="mr-2 h-5 w-5 transition-transform group-hover:-translate-x-1" />
+                    </Button>
+                  </Link>
+                  <a href="#how">
+                    <Button size="lg" variant="outline" className="h-14 px-8 glass border-white/10 hover:bg-white/5">
+                      <Play className="ml-2 h-5 w-5" />
+                      شاهد كيف يعمل
+                    </Button>
+                  </a>
+                </div>
+
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                    بدون بطاقة ائتمان
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                    إعداد في 30 ثانية
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                    إلغاء في أي وقت
+                  </span>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
