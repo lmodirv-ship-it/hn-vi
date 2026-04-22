@@ -275,14 +275,27 @@ export default function Index() {
       {/* Stats */}
       <section className="relative py-16">
         <div className="container mx-auto px-4">
-          <div className="glass-card rounded-3xl p-8 md:p-10">
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-              {stats.map((s, i) => (
-                <motion.div key={s.label} {...fadeUp} transition={{ delay: i * 0.1 }} className="text-center">
-                  <div className="text-4xl font-bold text-gradient md:text-5xl font-['Space_Grotesk']">{s.value}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
-                </motion.div>
-              ))}
+          <div className="relative">
+            <div className="absolute inset-0 gradient-primary opacity-20 blur-3xl" />
+            <div className="relative glass-strong rounded-3xl p-8 md:p-12 ring-1 ring-white/10">
+              <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+                {stats.map((s, i) => (
+                  <motion.div
+                    key={s.label}
+                    {...fadeUp}
+                    transition={{ delay: i * 0.1 }}
+                    className="group relative text-center"
+                  >
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl glass ring-1 ring-white/10 group-hover:ring-primary/50 transition-all">
+                      <s.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="text-4xl font-bold text-gradient md:text-5xl font-['Space_Grotesk'] tracking-tight">
+                      {s.value}
+                    </div>
+                    <div className="mt-2 text-sm text-muted-foreground">{s.label}</div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -333,19 +346,50 @@ export default function Index() {
           <motion.div {...fadeUp} className="mb-16 text-center">
             <span className="rounded-full glass px-3 py-1 text-xs text-foreground/70">كيف يعمل</span>
             <h2 className="mt-4 text-4xl font-bold md:text-5xl font-['Space_Grotesk']">
-              من فكرة إلى فيلم في <span className="text-gradient">4 خطوات</span>
+              من فكرة إلى فيلم في <span className="text-gradient">3 خطوات</span>
             </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              عملية بسيطة، نتائج سينمائية. لا حاجة لخبرة تقنية — فقط أفكارك.
+            </p>
           </motion.div>
-          <div className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <div className="absolute top-10 left-0 right-0 hidden h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent lg:block" />
+          <div className="relative grid gap-8 md:grid-cols-3">
+            {/* Connecting line */}
+            <div className="absolute top-1/3 left-[10%] right-[10%] hidden h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent md:block" />
             {steps.map((s, i) => (
-              <motion.div key={s.num} {...fadeUp} transition={{ delay: i * 0.12 }} className="relative">
-                <div className="glass-card relative rounded-2xl p-6 text-center">
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary text-xl font-bold text-primary-foreground shadow-lg shadow-primary/40 font-['Space_Grotesk']">
-                    {s.num}
+              <motion.div
+                key={s.num}
+                {...fadeUp}
+                transition={{ delay: i * 0.15 }}
+                className="group relative"
+              >
+                <div className="glass-card relative overflow-hidden rounded-3xl ring-1 ring-white/10 transition-all duration-500 hover:-translate-y-2 hover:ring-primary/40 hover:shadow-2xl hover:shadow-primary/30">
+                  {/* Image */}
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={s.image}
+                      alt={s.title}
+                      width={1024}
+                      height={768}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                    {/* Number badge */}
+                    <div className="absolute top-4 right-4 flex h-12 w-12 items-center justify-center rotate-45 rounded-lg gradient-primary shadow-lg shadow-primary/50">
+                      <span className="-rotate-45 text-base font-bold text-primary-foreground font-['Space_Grotesk']">
+                        {s.num}
+                      </span>
+                    </div>
+                    {/* Icon chip */}
+                    <div className="absolute bottom-4 left-4 flex h-10 w-10 items-center justify-center rounded-xl glass-strong ring-1 ring-white/15">
+                      <s.icon className="h-4 w-4 text-primary" />
+                    </div>
                   </div>
-                  <h3 className="mb-2 text-lg font-semibold font-['Space_Grotesk']">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                  {/* Content */}
+                  <div className="p-6">
+                    <h3 className="mb-3 text-xl font-bold font-['Space_Grotesk']">{s.title}</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -364,16 +408,38 @@ export default function Index() {
           </motion.div>
           <div className="grid gap-5 md:grid-cols-3">
             {testimonials.map((t, i) => (
-              <motion.div key={t.name} {...fadeUp} transition={{ delay: i * 0.1 }} className="glass-card rounded-2xl p-6">
-                <div className="mb-4 flex">{[...Array(5)].map((_, k) => <Star key={k} className="h-4 w-4 fill-accent text-accent" />)}</div>
-                <p className="mb-5 text-sm leading-relaxed text-foreground/85">"{t.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full gradient-primary text-sm font-bold text-primary-foreground">
-                    {t.name.charAt(0)}
+              <motion.div
+                key={t.name}
+                {...fadeUp}
+                transition={{ delay: i * 0.12 }}
+                className="group glass-card relative overflow-hidden rounded-3xl p-7 ring-1 ring-white/10 transition-all hover:-translate-y-1 hover:ring-primary/40 hover:shadow-2xl hover:shadow-primary/20"
+              >
+                {/* Decorative gradient */}
+                <div className="absolute -top-12 -right-12 h-32 w-32 rotate-45 gradient-primary opacity-10 blur-2xl group-hover:opacity-30 transition-opacity" />
+                <div className="relative">
+                  <div className="mb-4 flex">
+                    {[...Array(5)].map((_, k) => (
+                      <Star key={k} className="h-4 w-4 fill-accent text-accent" />
+                    ))}
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold font-['Space_Grotesk']">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                  <p className="mb-6 text-base leading-relaxed text-foreground/90 font-['Space_Grotesk']">
+                    "{t.quote}"
+                  </p>
+                  <div className="flex items-center gap-3 border-t border-white/5 pt-4">
+                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-primary/30">
+                      <img
+                        src={t.image}
+                        alt={t.name}
+                        width={512}
+                        height={512}
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold font-['Space_Grotesk']">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.role}</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
