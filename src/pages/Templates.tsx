@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Sparkles } from "lucide-react";
+import { Crown, Sparkles, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 import tplMarketing from "@/assets/tpl-marketing.jpg";
 import tplEducation from "@/assets/tpl-education.jpg";
 import tplSocial from "@/assets/tpl-social.jpg";
@@ -18,22 +22,71 @@ const categoryImages: Record<string, string> = {
 
 const categories = ["الكل", "تسويق", "تعليم", "سوشيال ميديا", "عرض تقديمي"];
 
-const templates = [
-  { id: "1", name: "ريلز تسويقي", category: "تسويق", scenes: 5, duration: "0:30", premium: false },
-  { id: "2", name: "شرح منتج", category: "تسويق", scenes: 8, duration: "1:00", premium: false },
-  { id: "3", name: "درس تعليمي", category: "تعليم", scenes: 12, duration: "2:00", premium: true },
-  { id: "4", name: "تيك توك — نصائح", category: "سوشيال ميديا", scenes: 4, duration: "0:15", premium: false },
-  { id: "5", name: "عرض شركة", category: "عرض تقديمي", scenes: 10, duration: "3:00", premium: true },
-  { id: "6", name: "إعلان قصير", category: "تسويق", scenes: 3, duration: "0:15", premium: false },
-  { id: "7", name: "ستوري انستغرام", category: "سوشيال ميديا", scenes: 6, duration: "0:15", premium: false },
-  { id: "8", name: "مقدمة يوتيوب", category: "سوشيال ميديا", scenes: 3, duration: "0:10", premium: true },
-];
+interface Template {
+  id: string;
+  name: string;
+  category: string;
+  is_premium: boolean | null;
+  config_json: any;
+}
+
+function fmtDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
 
 export default function Templates() {
   const [activeCategory, setActiveCategory] = useState("الكل");
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [usingId, setUsingId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase
+        .from("templates")
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (!error && data) setTemplates(data as Template[]);
+      setLoading(false);
+    })();
+  }, []);
 
   const filtered = activeCategory === "الكل" ? templates : templates.filter((t) => t.category === activeCategory);
+
+  const handleUseTemplate = async (t: Template) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setUsingId(t.id);
+    try {
+      const scenes = (t.config_json as any)?.scenes ?? [];
+      const { data, error } = await supabase
+        .from("projects")
+        .insert({
+          user_id: user.id,
+          title: t.name,
+          script_json: scenes,
+          status: "draft",
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      trackEvent(ANALYTICS_EVENTS.TEMPLATE_USE, { template_id: t.id, template_name: t.name });
+      trackEvent(ANALYTICS_EVENTS.PROJECT_CREATE, { from_template: true });
+      toast({ title: "تم إنشاء المشروع!", description: `جاري فتح "${t.name}"...` });
+      navigate(`/editor/${data.id}`);
+    } catch (e: any) {
+      toast({ title: "خطأ", description: e.message, variant: "destructive" });
+    } finally {
+      setUsingId(null);
+    }
+  };
 
   return (
     <div dir="rtl" className="min-h-screen p-6 lg:p-10">
@@ -61,9 +114,14 @@ export default function Templates() {
         ))}
       </div>
 
-      {/* Grid */}
+      {loading ? (
+        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+      ) : (
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filtered.map((t, i) => (
+        {filtered.map((t, i) => {
+          const scenes = (t.config_json as any)?.scenes ?? [];
+          const totalDuration = scenes.reduce((acc: number, s: any) => acc + (s.duration || 0), 0);
+          return (
           <motion.div
             key={t.id}
             initial={{ opacity: 0, y: 20 }}
@@ -81,35 +139,38 @@ export default function Templates() {
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
-              {t.premium && (
+              {t.is_premium && (
                 <Badge className="absolute top-2 right-2 gradient-accent border-0 text-accent-foreground shadow-lg">
                   <Crown className="ml-1 h-3 w-3" />
                   مميز
                 </Badge>
               )}
               <div className="absolute bottom-2 left-2 rounded-full glass px-2 py-0.5 text-xs text-foreground">
-                {t.duration}
+                {fmtDuration(totalDuration)}
               </div>
             </div>
             <div className="p-4">
               <h3 className="mb-1 font-semibold font-['Space_Grotesk']">{t.name}</h3>
               <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{t.scenes} مشاهد</span>
+                <span>{scenes.length} مشاهد</span>
                 <span>·</span>
                 <span>{t.category}</span>
               </div>
               <Button
                 size="sm"
+                disabled={usingId === t.id}
                 className="w-full gradient-primary border-0 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all"
-                onClick={() => toast({ title: "قريبًا!", description: "سيتم ربط القوالب بالمحرر" })}
+                onClick={() => handleUseTemplate(t)}
               >
-                <Sparkles className="ml-2 h-3.5 w-3.5" />
-                استخدم القالب
+                {usingId === t.id ? <Loader2 className="ml-2 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="ml-2 h-3.5 w-3.5" />}
+                {usingId === t.id ? "جاري الإنشاء..." : "استخدم القالب"}
               </Button>
             </div>
           </motion.div>
-        ))}
+          );
+        })}
       </div>
+      )}
     </div>
   );
 }
