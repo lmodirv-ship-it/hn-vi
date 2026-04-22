@@ -2,10 +2,17 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  Play, Sparkles, Zap, Film, Cpu, ArrowLeft, Star,
+  Play, Sparkles, Zap, Film, Cpu, ArrowLeft, Star, PenLine, Wand2, Rocket, Users, Globe2, Heart,
 } from "lucide-react";
 import AuroraBackground from "@/components/futuristic/AuroraBackground";
 import ctaRocket from "@/assets/cta-rocket.jpg";
+import heroCinematic from "@/assets/hero-cinematic.jpg";
+import stepWrite from "@/assets/step-write.jpg";
+import stepGenerate from "@/assets/step-generate.jpg";
+import stepExport from "@/assets/step-export.jpg";
+import avatar1 from "@/assets/avatar-1.jpg";
+import avatar2 from "@/assets/avatar-2.jpg";
+import avatar3 from "@/assets/avatar-3.jpg";
 import featAi from "@/assets/feat-ai.jpg";
 import featTemplates from "@/assets/feat-templates.jpg";
 import featPreview from "@/assets/feat-preview.jpg";
@@ -29,23 +36,55 @@ const features = [
 ];
 
 const steps = [
-  { num: "01", title: "اكتب فكرتك", desc: "أدخل النص أو اطلب من الـ AI كتابة سيناريو كامل لك" },
-  { num: "02", title: "صمّم بصريًا", desc: "اختر القالب، الألوان، الخطوط، والتأثيرات بنقرة واحدة" },
-  { num: "03", title: "أضف الصوت", desc: "تعليق صوتي ذكي بأي لغة + موسيقى تلقائية تناسب الإيقاع" },
-  { num: "04", title: "صدّر وانشر", desc: "صدّر بدقة 4K أو انشر مباشرة على جميع منصاتك" },
+  {
+    num: "01",
+    title: "اكتب فكرتك",
+    desc: "أدخل نصاً بسيطاً أو اطلب من الذكاء الاصطناعي توليد سيناريو سينمائي كامل لك في ثوانٍ.",
+    image: stepWrite,
+    icon: PenLine,
+  },
+  {
+    num: "02",
+    title: "ولّد المشاهد",
+    desc: "AI يقترح القوالب، التأثيرات، الموسيقى، والتعليق الصوتي تلقائياً — أو خصّص كل تفصيلة بنفسك.",
+    image: stepGenerate,
+    icon: Wand2,
+  },
+  {
+    num: "03",
+    title: "صدّر وانشر",
+    desc: "صدّر بدقة 4K بثوانٍ معدودة وانشر مباشرة على YouTube و TikTok و Instagram من نقرة واحدة.",
+    image: stepExport,
+    icon: Rocket,
+  },
 ];
 
 const stats = [
-  { value: "+250K", label: "مبدع نشط" },
-  { value: "+5M", label: "فيديو منتج" },
-  { value: "98%", label: "رضا العملاء" },
-  { value: "50+", label: "لغة مدعومة" },
+  { value: "+250K", label: "مبدع نشط حول العالم", icon: Users },
+  { value: "+5M", label: "فيديو سينمائي منتج", icon: Film },
+  { value: "98%", label: "رضا المستخدمين", icon: Heart },
+  { value: "50+", label: "لغة مدعومة بالـ AI", icon: Globe2 },
 ];
 
 const testimonials = [
-  { name: "ليلى أحمد", role: "صانعة محتوى", quote: "غيّر طريقة عملي بالكامل. أنتج فيديوهات احترافية بنصف الوقت." },
-  { name: "كريم سعيد", role: "مدير تسويق", quote: "أفضل أداة رأيتها لإنتاج إعلانات متعددة بسرعة وجودة عالية." },
-  { name: "سارة العتيبي", role: "معلمة", quote: "طلابي أصبحوا متحمسين أكثر مع الدروس المرئية. شكرًا FilmForge!" },
+  {
+    name: "كريم سعيد",
+    role: "مدير تسويق — دبي",
+    quote: "أنتج حملة إعلانية كاملة بـ 12 فيديو في أقل من ساعة. كانت تأخذني أسبوعاً قبل FilmForge.",
+    image: avatar1,
+  },
+  {
+    name: "ليلى أحمد",
+    role: "صانعة محتوى — الرياض",
+    quote: "الجودة سينمائية فعلاً. متابعيني زادوا 3 أضعاف منذ بدأت أستعمل المنصة. لا غنى عنها.",
+    image: avatar2,
+  },
+  {
+    name: "يوسف العمري",
+    role: "مخرج مستقل — الدار البيضاء",
+    quote: "أفضل ما جرّبته في حياتي. الـ AI يفهم النص العربي تماماً ويولّد مشاهد بمستوى هوليوود.",
+    image: avatar3,
+  },
 ];
 
 const fadeUp = {
