@@ -541,6 +541,8 @@ export default function Index() {
             {/* Diamond glow halo */}
             <div className="absolute -inset-8 gradient-primary opacity-30 blur-[120px] rounded-[3rem]" />
 
+      {/* PRICING + FAQ INSERTED ABOVE CTA */}
+
             <div className="relative overflow-hidden rounded-[2.5rem] glass-strong ring-1 ring-white/10 p-10 text-center md:p-20">
               {/* Background image */}
               <div className="absolute inset-0">
