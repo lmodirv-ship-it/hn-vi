@@ -204,32 +204,69 @@ export default function Index() {
             transition={{ duration: 0.9, delay: 0.5 }}
             className="relative mx-auto mt-20 max-w-6xl"
           >
-            <div className="absolute -inset-4 gradient-primary opacity-30 blur-3xl rounded-3xl" />
-            <div className="relative glass-card overflow-hidden rounded-2xl">
-              <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
+            {/* Diamond glow halo */}
+            <div className="absolute -inset-6 gradient-primary opacity-40 blur-[100px] rounded-[3rem]" />
+            <div className="absolute -inset-2 bg-gradient-to-tr from-primary/30 via-accent/20 to-primary/30 blur-2xl rounded-3xl" />
+
+            {/* Cinematic frame with diamond clip */}
+            <div className="relative glass-strong overflow-hidden rounded-3xl ring-1 ring-white/10">
+              <div className="flex items-center gap-2 border-b border-white/5 px-5 py-3">
                 <div className="flex gap-1.5">
                   <span className="h-3 w-3 rounded-full bg-destructive/70" />
                   <span className="h-3 w-3 rounded-full bg-accent/70" />
                   <span className="h-3 w-3 rounded-full bg-primary/70" />
                 </div>
-                <div className="ms-3 flex-1 text-center text-xs text-muted-foreground">FilmForge Studio — مشروع جديد</div>
-              </div>
-              <div className="aspect-video relative gradient-hero flex items-center justify-center">
-                <div className="absolute inset-0 gradient-mesh opacity-60" />
-                <div className="relative flex flex-col items-center gap-4">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full glass glow-primary">
-                    <Play className="h-8 w-8 fill-primary-foreground text-primary-foreground" />
-                  </div>
-                  <p className="text-sm text-foreground/70 font-['Space_Grotesk']">معاينة Studio Editor</p>
-                </div>
-                {/* floating UI chips */}
-                <div className="absolute top-6 right-6 glass rounded-xl px-3 py-2 text-xs">
-                  <Cpu className="inline h-3 w-3 ml-1 text-accent" /> AI يفكر...
-                </div>
-                <div className="absolute bottom-6 left-6 glass rounded-xl px-3 py-2 text-xs">
-                  <Film className="inline h-3 w-3 ml-1 text-primary" /> 12 مشهد • 4K
+                <div className="ms-3 flex-1 text-center text-xs text-muted-foreground font-['Space_Grotesk']">
+                  FilmForge Studio — مشروع سينمائي جديد
                 </div>
               </div>
+              <div className="relative aspect-video overflow-hidden">
+                <img
+                  src={heroCinematic}
+                  alt="واجهة محرر FilmForge السينمائي مع مؤثرات ألماسية مستقبلية"
+                  width={1920}
+                  height={1080}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                {/* Floating play */}
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <button className="group/play relative flex h-24 w-24 items-center justify-center rounded-full glass-strong glow-primary ring-2 ring-white/20 transition-transform hover:scale-110">
+                    <span className="absolute inset-0 rounded-full gradient-primary opacity-40 blur-xl group-hover/play:opacity-70 transition-opacity" />
+                    <Play className="relative h-9 w-9 fill-primary-foreground text-primary-foreground" />
+                  </button>
+                </motion.div>
+                {/* Floating UI chips */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.1 }}
+                  className="absolute top-6 right-6 glass-strong rounded-xl px-3 py-2 text-xs ring-1 ring-white/10"
+                >
+                  <Cpu className="inline h-3 w-3 ml-1 text-accent" /> AI يولّد المشاهد...
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.2 }}
+                  className="absolute bottom-6 left-6 glass-strong rounded-xl px-3 py-2 text-xs ring-1 ring-white/10"
+                >
+                  <Film className="inline h-3 w-3 ml-1 text-primary" /> 12 مشهد • 4K • 60fps
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Floating diamond accents */}
+            <div className="pointer-events-none absolute -top-8 -right-8 hidden md:block">
+              <div className="h-16 w-16 rotate-45 gradient-primary opacity-60 blur-md rounded-lg" />
+            </div>
+            <div className="pointer-events-none absolute -bottom-8 -left-8 hidden md:block">
+              <div className="h-20 w-20 rotate-45 bg-accent/40 blur-md rounded-lg" />
             </div>
           </motion.div>
         </div>
