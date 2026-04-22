@@ -2,10 +2,17 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  Play, Sparkles, Zap, Film, Cpu, ArrowLeft, Star,
+  Play, Sparkles, Zap, Film, Cpu, ArrowLeft, Star, PenLine, Wand2, Rocket, Users, Globe2, Heart,
 } from "lucide-react";
 import AuroraBackground from "@/components/futuristic/AuroraBackground";
 import ctaRocket from "@/assets/cta-rocket.jpg";
+import heroCinematic from "@/assets/hero-cinematic.jpg";
+import stepWrite from "@/assets/step-write.jpg";
+import stepGenerate from "@/assets/step-generate.jpg";
+import stepExport from "@/assets/step-export.jpg";
+import avatar1 from "@/assets/avatar-1.jpg";
+import avatar2 from "@/assets/avatar-2.jpg";
+import avatar3 from "@/assets/avatar-3.jpg";
 import featAi from "@/assets/feat-ai.jpg";
 import featTemplates from "@/assets/feat-templates.jpg";
 import featPreview from "@/assets/feat-preview.jpg";
@@ -29,23 +36,55 @@ const features = [
 ];
 
 const steps = [
-  { num: "01", title: "اكتب فكرتك", desc: "أدخل النص أو اطلب من الـ AI كتابة سيناريو كامل لك" },
-  { num: "02", title: "صمّم بصريًا", desc: "اختر القالب، الألوان، الخطوط، والتأثيرات بنقرة واحدة" },
-  { num: "03", title: "أضف الصوت", desc: "تعليق صوتي ذكي بأي لغة + موسيقى تلقائية تناسب الإيقاع" },
-  { num: "04", title: "صدّر وانشر", desc: "صدّر بدقة 4K أو انشر مباشرة على جميع منصاتك" },
+  {
+    num: "01",
+    title: "اكتب فكرتك",
+    desc: "أدخل نصاً بسيطاً أو اطلب من الذكاء الاصطناعي توليد سيناريو سينمائي كامل لك في ثوانٍ.",
+    image: stepWrite,
+    icon: PenLine,
+  },
+  {
+    num: "02",
+    title: "ولّد المشاهد",
+    desc: "AI يقترح القوالب، التأثيرات، الموسيقى، والتعليق الصوتي تلقائياً — أو خصّص كل تفصيلة بنفسك.",
+    image: stepGenerate,
+    icon: Wand2,
+  },
+  {
+    num: "03",
+    title: "صدّر وانشر",
+    desc: "صدّر بدقة 4K بثوانٍ معدودة وانشر مباشرة على YouTube و TikTok و Instagram من نقرة واحدة.",
+    image: stepExport,
+    icon: Rocket,
+  },
 ];
 
 const stats = [
-  { value: "+250K", label: "مبدع نشط" },
-  { value: "+5M", label: "فيديو منتج" },
-  { value: "98%", label: "رضا العملاء" },
-  { value: "50+", label: "لغة مدعومة" },
+  { value: "+250K", label: "مبدع نشط حول العالم", icon: Users },
+  { value: "+5M", label: "فيديو سينمائي منتج", icon: Film },
+  { value: "98%", label: "رضا المستخدمين", icon: Heart },
+  { value: "50+", label: "لغة مدعومة بالـ AI", icon: Globe2 },
 ];
 
 const testimonials = [
-  { name: "ليلى أحمد", role: "صانعة محتوى", quote: "غيّر طريقة عملي بالكامل. أنتج فيديوهات احترافية بنصف الوقت." },
-  { name: "كريم سعيد", role: "مدير تسويق", quote: "أفضل أداة رأيتها لإنتاج إعلانات متعددة بسرعة وجودة عالية." },
-  { name: "سارة العتيبي", role: "معلمة", quote: "طلابي أصبحوا متحمسين أكثر مع الدروس المرئية. شكرًا FilmForge!" },
+  {
+    name: "كريم سعيد",
+    role: "مدير تسويق — دبي",
+    quote: "أنتج حملة إعلانية كاملة بـ 12 فيديو في أقل من ساعة. كانت تأخذني أسبوعاً قبل FilmForge.",
+    image: avatar1,
+  },
+  {
+    name: "ليلى أحمد",
+    role: "صانعة محتوى — الرياض",
+    quote: "الجودة سينمائية فعلاً. متابعيني زادوا 3 أضعاف منذ بدأت أستعمل المنصة. لا غنى عنها.",
+    image: avatar2,
+  },
+  {
+    name: "يوسف العمري",
+    role: "مخرج مستقل — الدار البيضاء",
+    quote: "أفضل ما جرّبته في حياتي. الـ AI يفهم النص العربي تماماً ويولّد مشاهد بمستوى هوليوود.",
+    image: avatar3,
+  },
 ];
 
 const fadeUp = {
@@ -165,32 +204,69 @@ export default function Index() {
             transition={{ duration: 0.9, delay: 0.5 }}
             className="relative mx-auto mt-20 max-w-6xl"
           >
-            <div className="absolute -inset-4 gradient-primary opacity-30 blur-3xl rounded-3xl" />
-            <div className="relative glass-card overflow-hidden rounded-2xl">
-              <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
+            {/* Diamond glow halo */}
+            <div className="absolute -inset-6 gradient-primary opacity-40 blur-[100px] rounded-[3rem]" />
+            <div className="absolute -inset-2 bg-gradient-to-tr from-primary/30 via-accent/20 to-primary/30 blur-2xl rounded-3xl" />
+
+            {/* Cinematic frame with diamond clip */}
+            <div className="relative glass-strong overflow-hidden rounded-3xl ring-1 ring-white/10">
+              <div className="flex items-center gap-2 border-b border-white/5 px-5 py-3">
                 <div className="flex gap-1.5">
                   <span className="h-3 w-3 rounded-full bg-destructive/70" />
                   <span className="h-3 w-3 rounded-full bg-accent/70" />
                   <span className="h-3 w-3 rounded-full bg-primary/70" />
                 </div>
-                <div className="ms-3 flex-1 text-center text-xs text-muted-foreground">FilmForge Studio — مشروع جديد</div>
-              </div>
-              <div className="aspect-video relative gradient-hero flex items-center justify-center">
-                <div className="absolute inset-0 gradient-mesh opacity-60" />
-                <div className="relative flex flex-col items-center gap-4">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full glass glow-primary">
-                    <Play className="h-8 w-8 fill-primary-foreground text-primary-foreground" />
-                  </div>
-                  <p className="text-sm text-foreground/70 font-['Space_Grotesk']">معاينة Studio Editor</p>
-                </div>
-                {/* floating UI chips */}
-                <div className="absolute top-6 right-6 glass rounded-xl px-3 py-2 text-xs">
-                  <Cpu className="inline h-3 w-3 ml-1 text-accent" /> AI يفكر...
-                </div>
-                <div className="absolute bottom-6 left-6 glass rounded-xl px-3 py-2 text-xs">
-                  <Film className="inline h-3 w-3 ml-1 text-primary" /> 12 مشهد • 4K
+                <div className="ms-3 flex-1 text-center text-xs text-muted-foreground font-['Space_Grotesk']">
+                  FilmForge Studio — مشروع سينمائي جديد
                 </div>
               </div>
+              <div className="relative aspect-video overflow-hidden">
+                <img
+                  src={heroCinematic}
+                  alt="واجهة محرر FilmForge السينمائي مع مؤثرات ألماسية مستقبلية"
+                  width={1920}
+                  height={1080}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                {/* Floating play */}
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <button className="group/play relative flex h-24 w-24 items-center justify-center rounded-full glass-strong glow-primary ring-2 ring-white/20 transition-transform hover:scale-110">
+                    <span className="absolute inset-0 rounded-full gradient-primary opacity-40 blur-xl group-hover/play:opacity-70 transition-opacity" />
+                    <Play className="relative h-9 w-9 fill-primary-foreground text-primary-foreground" />
+                  </button>
+                </motion.div>
+                {/* Floating UI chips */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.1 }}
+                  className="absolute top-6 right-6 glass-strong rounded-xl px-3 py-2 text-xs ring-1 ring-white/10"
+                >
+                  <Cpu className="inline h-3 w-3 ml-1 text-accent" /> AI يولّد المشاهد...
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.2 }}
+                  className="absolute bottom-6 left-6 glass-strong rounded-xl px-3 py-2 text-xs ring-1 ring-white/10"
+                >
+                  <Film className="inline h-3 w-3 ml-1 text-primary" /> 12 مشهد • 4K • 60fps
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Floating diamond accents */}
+            <div className="pointer-events-none absolute -top-8 -right-8 hidden md:block">
+              <div className="h-16 w-16 rotate-45 gradient-primary opacity-60 blur-md rounded-lg" />
+            </div>
+            <div className="pointer-events-none absolute -bottom-8 -left-8 hidden md:block">
+              <div className="h-20 w-20 rotate-45 bg-accent/40 blur-md rounded-lg" />
             </div>
           </motion.div>
         </div>
@@ -199,14 +275,27 @@ export default function Index() {
       {/* Stats */}
       <section className="relative py-16">
         <div className="container mx-auto px-4">
-          <div className="glass-card rounded-3xl p-8 md:p-10">
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-              {stats.map((s, i) => (
-                <motion.div key={s.label} {...fadeUp} transition={{ delay: i * 0.1 }} className="text-center">
-                  <div className="text-4xl font-bold text-gradient md:text-5xl font-['Space_Grotesk']">{s.value}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
-                </motion.div>
-              ))}
+          <div className="relative">
+            <div className="absolute inset-0 gradient-primary opacity-20 blur-3xl" />
+            <div className="relative glass-strong rounded-3xl p-8 md:p-12 ring-1 ring-white/10">
+              <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+                {stats.map((s, i) => (
+                  <motion.div
+                    key={s.label}
+                    {...fadeUp}
+                    transition={{ delay: i * 0.1 }}
+                    className="group relative text-center"
+                  >
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl glass ring-1 ring-white/10 group-hover:ring-primary/50 transition-all">
+                      <s.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="text-4xl font-bold text-gradient md:text-5xl font-['Space_Grotesk'] tracking-tight">
+                      {s.value}
+                    </div>
+                    <div className="mt-2 text-sm text-muted-foreground">{s.label}</div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -257,19 +346,50 @@ export default function Index() {
           <motion.div {...fadeUp} className="mb-16 text-center">
             <span className="rounded-full glass px-3 py-1 text-xs text-foreground/70">كيف يعمل</span>
             <h2 className="mt-4 text-4xl font-bold md:text-5xl font-['Space_Grotesk']">
-              من فكرة إلى فيلم في <span className="text-gradient">4 خطوات</span>
+              من فكرة إلى فيلم في <span className="text-gradient">3 خطوات</span>
             </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              عملية بسيطة، نتائج سينمائية. لا حاجة لخبرة تقنية — فقط أفكارك.
+            </p>
           </motion.div>
-          <div className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <div className="absolute top-10 left-0 right-0 hidden h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent lg:block" />
+          <div className="relative grid gap-8 md:grid-cols-3">
+            {/* Connecting line */}
+            <div className="absolute top-1/3 left-[10%] right-[10%] hidden h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent md:block" />
             {steps.map((s, i) => (
-              <motion.div key={s.num} {...fadeUp} transition={{ delay: i * 0.12 }} className="relative">
-                <div className="glass-card relative rounded-2xl p-6 text-center">
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary text-xl font-bold text-primary-foreground shadow-lg shadow-primary/40 font-['Space_Grotesk']">
-                    {s.num}
+              <motion.div
+                key={s.num}
+                {...fadeUp}
+                transition={{ delay: i * 0.15 }}
+                className="group relative"
+              >
+                <div className="glass-card relative overflow-hidden rounded-3xl ring-1 ring-white/10 transition-all duration-500 hover:-translate-y-2 hover:ring-primary/40 hover:shadow-2xl hover:shadow-primary/30">
+                  {/* Image */}
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={s.image}
+                      alt={s.title}
+                      width={1024}
+                      height={768}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                    {/* Number badge */}
+                    <div className="absolute top-4 right-4 flex h-12 w-12 items-center justify-center rotate-45 rounded-lg gradient-primary shadow-lg shadow-primary/50">
+                      <span className="-rotate-45 text-base font-bold text-primary-foreground font-['Space_Grotesk']">
+                        {s.num}
+                      </span>
+                    </div>
+                    {/* Icon chip */}
+                    <div className="absolute bottom-4 left-4 flex h-10 w-10 items-center justify-center rounded-xl glass-strong ring-1 ring-white/15">
+                      <s.icon className="h-4 w-4 text-primary" />
+                    </div>
                   </div>
-                  <h3 className="mb-2 text-lg font-semibold font-['Space_Grotesk']">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                  {/* Content */}
+                  <div className="p-6">
+                    <h3 className="mb-3 text-xl font-bold font-['Space_Grotesk']">{s.title}</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -288,16 +408,38 @@ export default function Index() {
           </motion.div>
           <div className="grid gap-5 md:grid-cols-3">
             {testimonials.map((t, i) => (
-              <motion.div key={t.name} {...fadeUp} transition={{ delay: i * 0.1 }} className="glass-card rounded-2xl p-6">
-                <div className="mb-4 flex">{[...Array(5)].map((_, k) => <Star key={k} className="h-4 w-4 fill-accent text-accent" />)}</div>
-                <p className="mb-5 text-sm leading-relaxed text-foreground/85">"{t.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full gradient-primary text-sm font-bold text-primary-foreground">
-                    {t.name.charAt(0)}
+              <motion.div
+                key={t.name}
+                {...fadeUp}
+                transition={{ delay: i * 0.12 }}
+                className="group glass-card relative overflow-hidden rounded-3xl p-7 ring-1 ring-white/10 transition-all hover:-translate-y-1 hover:ring-primary/40 hover:shadow-2xl hover:shadow-primary/20"
+              >
+                {/* Decorative gradient */}
+                <div className="absolute -top-12 -right-12 h-32 w-32 rotate-45 gradient-primary opacity-10 blur-2xl group-hover:opacity-30 transition-opacity" />
+                <div className="relative">
+                  <div className="mb-4 flex">
+                    {[...Array(5)].map((_, k) => (
+                      <Star key={k} className="h-4 w-4 fill-accent text-accent" />
+                    ))}
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold font-['Space_Grotesk']">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                  <p className="mb-6 text-base leading-relaxed text-foreground/90 font-['Space_Grotesk']">
+                    "{t.quote}"
+                  </p>
+                  <div className="flex items-center gap-3 border-t border-white/5 pt-4">
+                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-primary/30">
+                      <img
+                        src={t.image}
+                        alt={t.name}
+                        width={512}
+                        height={512}
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold font-['Space_Grotesk']">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.role}</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -309,31 +451,84 @@ export default function Index() {
       {/* CTA */}
       <section className="relative py-24">
         <div className="container mx-auto px-4">
-          <motion.div {...fadeUp} className="relative overflow-hidden rounded-3xl glass-strong p-12 text-center md:p-20">
-            <div className="absolute inset-0 gradient-mesh opacity-60" />
-            <div className="relative">
-              <div className="mx-auto mb-6 h-20 w-20 overflow-hidden rounded-2xl ring-1 ring-white/15 glow-primary">
+          <motion.div {...fadeUp} className="relative">
+            {/* Diamond glow halo */}
+            <div className="absolute -inset-8 gradient-primary opacity-30 blur-[120px] rounded-[3rem]" />
+
+            <div className="relative overflow-hidden rounded-[2.5rem] glass-strong ring-1 ring-white/10 p-10 text-center md:p-20">
+              {/* Background image */}
+              <div className="absolute inset-0">
                 <img
                   src={ctaRocket}
-                  alt="صاروخ ينطلق"
-                  width={512}
-                  height={512}
-                  loading="lazy"
-                  className="h-full w-full object-cover"
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover opacity-20"
                 />
+                <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background/90" />
+                <div className="absolute inset-0 gradient-mesh opacity-50" />
               </div>
-              <h2 className="mb-4 text-4xl font-bold md:text-6xl font-['Space_Grotesk']">
-                جاهز لصنع <span className="text-gradient">المستحيل</span>؟
-              </h2>
-              <p className="mx-auto mb-8 max-w-xl text-muted-foreground md:text-lg">
-                انضم لآلاف المبدعين وابدأ رحلتك مع منصة الجيل القادم — مجانًا
-              </p>
-              <Link to="/login">
-                <Button size="lg" className="gradient-primary border-0 text-primary-foreground h-13 px-10 text-base shadow-xl shadow-primary/40 hover:shadow-primary/70 transition-all">
-                  ابدأ الآن
-                  <ArrowLeft className="mr-2 h-5 w-5" />
-                </Button>
-              </Link>
+
+              {/* Floating diamonds */}
+              <div className="pointer-events-none absolute top-10 right-10 h-20 w-20 rotate-45 gradient-primary opacity-20 blur-xl" />
+              <div className="pointer-events-none absolute bottom-10 left-10 h-24 w-24 rotate-45 bg-accent/30 blur-xl" />
+              <div className="pointer-events-none absolute top-1/2 left-1/4 h-12 w-12 -translate-y-1/2 rotate-45 bg-primary/40 blur-lg" />
+
+              <div className="relative mx-auto max-w-3xl">
+                {/* Diamond logo */}
+                <motion.div
+                  initial={{ scale: 0, rotate: 0 }}
+                  whileInView={{ scale: 1, rotate: 360 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="mx-auto mb-8 flex h-24 w-24 rotate-45 items-center justify-center rounded-2xl gradient-primary shadow-2xl shadow-primary/60"
+                >
+                  <Sparkles className="h-10 w-10 -rotate-45 text-primary-foreground" />
+                </motion.div>
+
+                <h2 className="mb-5 text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl font-['Space_Grotesk']">
+                  ابدأ صناعة
+                  <br />
+                  <span className="text-gradient">المستقبل اليوم</span>
+                </h2>
+                <p className="mx-auto mb-10 max-w-xl text-base text-muted-foreground md:text-lg leading-relaxed">
+                  انضم لـ <span className="font-bold text-foreground">+250,000</span> مبدع يصنعون أفلاماً سينمائية بذكاء اصطناعي.
+                  لا حاجة لبطاقة ائتمان — فقط أفكارك.
+                </p>
+
+                <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <Link to="/login">
+                    <Button
+                      size="lg"
+                      className="group gradient-primary border-0 text-primary-foreground h-14 px-10 text-base shadow-2xl shadow-primary/50 hover:shadow-primary/80 transition-all hover:-translate-y-0.5"
+                    >
+                      <Sparkles className="ml-2 h-5 w-5 transition-transform group-hover:rotate-12" />
+                      ابدأ مجاناً الآن
+                      <ArrowLeft className="mr-2 h-5 w-5 transition-transform group-hover:-translate-x-1" />
+                    </Button>
+                  </Link>
+                  <a href="#how">
+                    <Button size="lg" variant="outline" className="h-14 px-8 glass border-white/10 hover:bg-white/5">
+                      <Play className="ml-2 h-5 w-5" />
+                      شاهد كيف يعمل
+                    </Button>
+                  </a>
+                </div>
+
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                    بدون بطاقة ائتمان
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                    إعداد في 30 ثانية
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                    إلغاء في أي وقت
+                  </span>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
