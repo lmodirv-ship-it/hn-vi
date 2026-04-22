@@ -1,4 +1,4 @@
-import { LayoutDashboard, Film, Palette, Settings, Play, LogOut, Shield } from "lucide-react";
+import { LayoutDashboard, Film, Palette, Settings, Play, LogOut, Shield, Download } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +20,7 @@ import {
 const navItems = [
   { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard },
   { title: "القوالب", url: "/templates", icon: Palette },
+  { title: "تصديراتي", url: "/exports", icon: Download },
   { title: "الإعدادات", url: "/settings", icon: Settings },
 ];
 

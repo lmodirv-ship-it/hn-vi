@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import VoiceoverPanel from "@/components/VoiceoverPanel";
 import { type TTSConfig, DEFAULT_TTS_CONFIG } from "@/lib/ttsService";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 const defaultScenes: SceneData[] = [
   { id: "1", title: "المقدمة", text: "مرحبًا بكم في عرضنا", duration: 5, bgColor: "#6C3AED", transition: "fade" },
@@ -146,6 +147,23 @@ export default function Editor() {
     setIsExporting(true);
     setExportProgress(0);
     setExportStatus("جاري البدء...");
+    trackEvent(ANALYTICS_EVENTS.EXPORT_START, { preset: exportPreset, quality: exportQuality, format: exportFormat });
+
+    // Create pending export row
+    let exportRowId: string | null = null;
+    if (user && id) {
+      const { data: exportRow } = await supabase
+        .from("exports")
+        .insert({
+          user_id: user.id,
+          project_id: id,
+          status: "pending",
+          resolution: exportPreset,
+        })
+        .select()
+        .single();
+      exportRowId = exportRow?.id ?? null;
+    }
 
     try {
       const preset = EXPORT_PRESETS[exportPreset];
@@ -184,14 +202,43 @@ export default function Editor() {
         fileExt = exportFormat;
       }
 
+      // Upload to Storage and update export row
+      let storagePath: string | null = null;
+      if (user && id) {
+        try {
+          setExportStatus("جاري الرفع للسحابة...");
+          const blob = await fetch(url).then((r) => r.blob());
+          storagePath = `${user.id}/${id}_${Date.now()}.${fileExt}`;
+          const { error: upErr } = await supabase.storage.from("exports").upload(storagePath, blob, {
+            contentType: fileExt === "mp4" ? "video/mp4" : "video/webm",
+            upsert: false,
+          });
+          if (upErr) throw upErr;
+          if (exportRowId) {
+            await supabase.from("exports").update({
+              status: "completed",
+              video_url: storagePath,
+            }).eq("id", exportRowId);
+          }
+        } catch (uploadErr: any) {
+          console.error("Storage upload failed:", uploadErr);
+          // Still allow local download even if cloud save failed
+        }
+      }
+
       const a = document.createElement("a");
       a.href = url;
       a.download = `filmforge-video-${exportPreset}.${fileExt}`;
       a.click();
 
+      trackEvent(ANALYTICS_EVENTS.EXPORT_COMPLETE, { preset: exportPreset, format: fileExt });
       toast({ title: "تم التصدير بنجاح!", description: `تم تصدير الفيديو بجودة ${preset.label}` });
       setShowExport(false);
     } catch (error: any) {
+      if (exportRowId) {
+        await supabase.from("exports").update({ status: "failed" }).eq("id", exportRowId);
+      }
+      trackEvent(ANALYTICS_EVENTS.EXPORT_FAILED, { error: error.message });
       toast({ title: "خطأ في التصدير", description: error.message, variant: "destructive" });
     } finally {
       setIsExporting(false);

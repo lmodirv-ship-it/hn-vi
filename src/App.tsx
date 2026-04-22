@@ -16,6 +16,7 @@ import AdminRoute from "./components/AdminRoute";
 import DashboardLayout from "./components/DashboardLayout";
 import NotFound from "./pages/NotFound";
 import Install from "./pages/Install";
+import Exports from "./pages/Exports";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             }>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/templates" element={<Templates />} />
+              <Route path="/exports" element={<Exports />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
             </Route>
