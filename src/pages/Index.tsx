@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import {
   Play, Sparkles, Zap, Film, Cpu, ArrowLeft, Star, PenLine, Wand2, Rocket, Users, Globe2, Heart,
 } from "lucide-react";
+import {
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Check, Crown, Gem } from "lucide-react";
 import AuroraBackground from "@/components/futuristic/AuroraBackground";
 import ctaRocket from "@/assets/cta-rocket.jpg";
 import heroCinematic from "@/assets/hero-cinematic.jpg";
