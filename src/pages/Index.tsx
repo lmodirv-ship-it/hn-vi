@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import {
   Play, Sparkles, Zap, Film, Cpu, ArrowLeft, Star, PenLine, Wand2, Rocket, Users, Globe2, Heart,
 } from "lucide-react";
+import {
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Check, Crown, Gem } from "lucide-react";
 import AuroraBackground from "@/components/futuristic/AuroraBackground";
 import ctaRocket from "@/assets/cta-rocket.jpg";
 import heroCinematic from "@/assets/hero-cinematic.jpg";
@@ -84,6 +88,88 @@ const testimonials = [
     role: "مخرج مستقل — الدار البيضاء",
     quote: "أفضل ما جرّبته في حياتي. الـ AI يفهم النص العربي تماماً ويولّد مشاهد بمستوى هوليوود.",
     image: avatar3,
+  },
+];
+
+const pricingPlans = [
+  {
+    name: "مجاني",
+    price: "0",
+    period: "للأبد",
+    description: "مثالي للتجربة وصناعة الفيديوهات الأولى",
+    icon: Sparkles,
+    features: [
+      "5 فيديوهات شهرياً",
+      "دقة 720p",
+      "20 قالب أساسي",
+      "علامة مائية صغيرة",
+      "تصدير في دقيقتين",
+    ],
+    cta: "ابدأ مجاناً",
+    highlighted: false,
+  },
+  {
+    name: "Pro",
+    price: "19",
+    period: "/شهر",
+    description: "للمبدعين وصناع المحتوى المحترفين",
+    icon: Gem,
+    features: [
+      "فيديوهات غير محدودة",
+      "دقة 4K سينمائية",
+      "+200 قالب احترافي",
+      "بدون علامة مائية",
+      "أصوات AI بـ 50 لغة",
+      "تصدير سريع بـ GPU",
+      "نشر مباشر للمنصات",
+    ],
+    cta: "ابدأ تجربة 7 أيام",
+    highlighted: true,
+  },
+  {
+    name: "Studio",
+    price: "49",
+    period: "/شهر",
+    description: "للفرق والوكالات والاستوديوهات",
+    icon: Crown,
+    features: [
+      "كل مميزات Pro",
+      "تعاون لحظي للفريق",
+      "دقة 8K + HDR",
+      "تأثيرات هوليوود كاملة",
+      "API للمطورين",
+      "تخزين سحابي 1TB",
+      "دعم فني VIP 24/7",
+    ],
+    cta: "تواصل مع المبيعات",
+    highlighted: false,
+  },
+];
+
+const faqs = [
+  {
+    q: "هل أحتاج خبرة في التصميم أو المونتاج؟",
+    a: "أبداً. FilmForge مصمم ليكون بسيطاً جداً — اكتب فكرتك بالعربية والذكاء الاصطناعي يتولى الباقي. لا حاجة لخبرة تقنية أو إبداعية مسبقة.",
+  },
+  {
+    q: "ما هي جودة الفيديوهات الناتجة؟",
+    a: "نوفر جودة سينمائية تصل إلى 4K (و 8K في خطة Studio) بمعدل 60 إطار/ثانية، مع تأثيرات بصرية بمستوى استوديوهات هوليوود وألوان LUTs احترافية.",
+  },
+  {
+    q: "ما هي اللغات المدعومة؟",
+    a: "ندعم أكثر من 50 لغة بشكل كامل، مع تركيز خاص على اللغة العربية بجميع لهجاتها (الفصحى، الخليجية، المصرية، المغربية...) وأصوات بشرية واقعية.",
+  },
+  {
+    q: "هل بياناتي ومشاريعي آمنة؟",
+    a: "نعم 100%. نستخدم تشفيراً كاملاً، Row Level Security على قاعدة البيانات، نسخ احتياطية تلقائية، ولا نشارك أي بيانات مع أطراف ثالثة. مشاريعك ملكك وحدك.",
+  },
+  {
+    q: "هل يمكنني الإلغاء في أي وقت؟",
+    a: "بالطبع. لا توجد عقود أو التزامات. يمكنك الإلغاء بنقرة واحدة من إعدادات حسابك، وتحتفظ بجميع فيديوهاتك بعد الإلغاء.",
+  },
+  {
+    q: "هل أملك حقوق الفيديوهات التي أنشئها؟",
+    a: "نعم. جميع الفيديوهات التي تنشئها ملكك بالكامل بحقوق تجارية كاملة — يمكنك استخدامها في الإعلانات والحملات والبيع دون أي قيود.",
   },
 ];
 
@@ -445,6 +531,174 @@ export default function Index() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="relative py-24">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="mb-16 text-center">
+            <span className="rounded-full glass px-3 py-1 text-xs text-foreground/70">الأسعار</span>
+            <h2 className="mt-4 text-4xl font-bold md:text-5xl font-['Space_Grotesk']">
+              خطط <span className="text-gradient">تناسب الجميع</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              ابدأ مجاناً وارتقِ متى احتجت — بدون عقود، بدون مفاجآت
+            </p>
+          </motion.div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {pricingPlans.map((plan, i) => (
+              <motion.div
+                key={plan.name}
+                {...fadeUp}
+                transition={{ delay: i * 0.1 }}
+                className={`group relative ${plan.highlighted ? "md:-translate-y-4" : ""}`}
+              >
+                {plan.highlighted && (
+                  <>
+                    <div className="absolute -inset-1 gradient-primary opacity-50 blur-2xl rounded-3xl" />
+                    <div className="absolute -top-4 left-1/2 z-10 -translate-x-1/2">
+                      <div className="rotate-0 rounded-full gradient-primary px-4 py-1 text-[11px] font-bold text-primary-foreground shadow-lg shadow-primary/50 font-['Space_Grotesk'] tracking-wide">
+                        ⭐ الأكثر شعبية
+                      </div>
+                    </div>
+                  </>
+                )}
+                <div
+                  className={`relative h-full overflow-hidden rounded-3xl p-8 ring-1 transition-all hover:-translate-y-1 ${
+                    plan.highlighted
+                      ? "glass-strong ring-primary/40 shadow-2xl shadow-primary/30"
+                      : "glass-card ring-white/10 hover:ring-primary/30"
+                  }`}
+                >
+                  {/* Diamond corner accent */}
+                  <div
+                    className={`pointer-events-none absolute -top-10 -right-10 h-24 w-24 rotate-45 blur-2xl ${
+                      plan.highlighted ? "gradient-primary opacity-40" : "bg-primary/20 opacity-50"
+                    }`}
+                  />
+
+                  {/* Icon */}
+                  <div
+                    className={`mb-5 flex h-14 w-14 rotate-45 items-center justify-center rounded-xl ring-1 ${
+                      plan.highlighted
+                        ? "gradient-primary shadow-lg shadow-primary/50 ring-white/20"
+                        : "glass ring-white/10"
+                    }`}
+                  >
+                    <plan.icon
+                      className={`h-6 w-6 -rotate-45 ${
+                        plan.highlighted ? "text-primary-foreground" : "text-primary"
+                      }`}
+                    />
+                  </div>
+
+                  {/* Name */}
+                  <h3 className="mb-2 text-2xl font-bold font-['Space_Grotesk']">{plan.name}</h3>
+                  <p className="mb-6 text-sm text-muted-foreground">{plan.description}</p>
+
+                  {/* Price */}
+                  <div className="mb-6 flex items-end gap-2">
+                    <span className="text-5xl font-bold font-['Space_Grotesk'] tracking-tight">
+                      ${plan.price}
+                    </span>
+                    <span className="mb-2 text-sm text-muted-foreground">{plan.period}</span>
+                  </div>
+
+                  {/* CTA */}
+                  <Link to="/login" className="block">
+                    <Button
+                      size="lg"
+                      className={`mb-7 w-full ${
+                        plan.highlighted
+                          ? "gradient-primary border-0 text-primary-foreground shadow-lg shadow-primary/40 hover:shadow-primary/60"
+                          : "glass border border-white/10 bg-transparent text-foreground hover:bg-white/5"
+                      }`}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </Link>
+
+                  {/* Features */}
+                  <ul className="space-y-3">
+                    {plan.features.map((feat) => (
+                      <li key={feat} className="flex items-start gap-3 text-sm">
+                        <span
+                          className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md ${
+                            plan.highlighted
+                              ? "gradient-primary"
+                              : "bg-primary/15 ring-1 ring-primary/30"
+                          }`}
+                        >
+                          <Check
+                            className={`h-3 w-3 ${
+                              plan.highlighted ? "text-primary-foreground" : "text-primary"
+                            }`}
+                          />
+                        </span>
+                        <span className="text-foreground/85 leading-relaxed">{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.p
+            {...fadeUp}
+            className="mt-10 text-center text-sm text-muted-foreground"
+          >
+            جميع الخطط تشمل: تشفير كامل • نسخ احتياطية تلقائية • دعم باللغة العربية
+          </motion.p>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="relative py-24">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="mb-16 text-center">
+            <span className="rounded-full glass px-3 py-1 text-xs text-foreground/70">الأسئلة الشائعة</span>
+            <h2 className="mt-4 text-4xl font-bold md:text-5xl font-['Space_Grotesk']">
+              أسئلة <span className="text-gradient">يطرحها الجميع</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              كل ما تحتاج معرفته قبل أن تبدأ رحلتك مع FilmForge
+            </p>
+          </motion.div>
+
+          <motion.div {...fadeUp} className="relative mx-auto max-w-3xl">
+            {/* Diamond background accents */}
+            <div className="pointer-events-none absolute -top-10 -right-10 h-24 w-24 rotate-45 gradient-primary opacity-15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rotate-45 bg-accent/30 blur-3xl" />
+
+            <Accordion
+              type="single"
+              collapsible
+              className="relative glass-card rounded-3xl ring-1 ring-white/10 p-2 md:p-4"
+            >
+              {faqs.map((faq, i) => (
+                <AccordionItem
+                  key={i}
+                  value={`item-${i}`}
+                  className="border-b border-white/5 last:border-0 px-4 md:px-6"
+                >
+                  <AccordionTrigger className="text-right text-base font-semibold font-['Space_Grotesk'] hover:text-primary hover:no-underline py-5">
+                    <span className="flex items-center gap-3 flex-1">
+                      <span className="flex h-7 w-7 shrink-0 rotate-45 items-center justify-center rounded-md gradient-primary text-[11px] font-bold text-primary-foreground shadow-md shadow-primary/40">
+                        <span className="-rotate-45">{i + 1}</span>
+                      </span>
+                      {faq.q}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-5 pr-10">
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </motion.div>
         </div>
       </section>
 
