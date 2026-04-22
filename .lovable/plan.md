@@ -1,101 +1,86 @@
 
 
-# Text-to-Video Web Application — Implementation Plan
+# تحويل التطبيق من Mock إلى نظام حقيقي كامل
 
-## Platform Constraints
+## الوضع الحالي (تشخيص دقيق)
 
-Lovable runs **React + Tailwind + TypeScript** on the frontend with **Supabase Cloud** as backend. No Node.js/Express servers, no MongoDB. We adapt your architecture accordingly.
+بعد فحص المشروع، الواقع مختلف عمّا ذُكر:
 
-## Architecture
+| العنصر | الحالة الفعلية |
+|---|---|
+| المصادقة (Auth) | ✅ **حقيقية** عبر Supabase (`AuthContext.tsx` + `signInWithPassword` / `signUp`) — ليست localStorage |
+| Database Tables | ✅ **موجودة**: `profiles`, `projects`, `exports`, `templates`, `user_roles` مع RLS كامل |
+| Backend Functions | ✅ Triggers و Functions موجودة (`handle_new_user`, `assign_default_role`, `has_role`) |
+| Projects (Dashboard) | ✅ **حقيقي** — يقرأ/يكتب من جدول `projects` |
+| Admin (Users/Projects/Exports) | ✅ **حقيقي** — يقرأ من Supabase |
+| **Templates** | ❌ **Mock فقط** — مصفوفة ثابتة في `Templates.tsx`، الجدول فارغ |
+| **Settings** | ❌ **Mock** — كل الأزرار تُظهر "قريباً!" بدون حفظ فعلي |
+| **Exports** | ⚠️ تُولَّد محلياً في المتصفح لكن لا تُحفظ في جدول `exports` ولا في Storage |
+| **Agents / Machines** | ❌ غير موجودة أصلاً في المشروع (لم نجد أي كود لها) |
+
+## الخطة: تفعيل كل ما هو Mock
+
+### 1. Templates حقيقية من قاعدة البيانات
+- **Migration**: إدراج 8 قوالب seed في جدول `templates` (Marketing×2, Education×2, Social×2, Presentation×2) مع `config_json` يحتوي بنية مشاهد جاهزة.
+- **`Templates.tsx`**: استبدال المصفوفة الثابتة بـ `supabase.from("templates").select("*")` + فلترة حسب الفئة.
+- **زر "استخدم القالب"**: ينشئ مشروعاً جديداً في `projects` بـ `script_json` من `template.config_json` ثم ينقل لـ `/editor/:id`.
+
+### 2. Settings حقيقي (Profile + Password + Preferences)
+- **حفظ الملف الشخصي**: تحديث `display_name` و `avatar_url` في `profiles` عبر `update().eq("user_id", user.id)`.
+- **تغيير كلمة المرور**: `supabase.auth.updateUser({ password })` مع تأكيد.
+- **التفضيلات**: إضافة عمود `preferences jsonb` في `profiles` (migration) لحفظ: الإشعارات، اللغة، تفضيلات التصدير الافتراضية.
+- **رفع Avatar**: إنشاء storage bucket `avatars` (public) + سياسات + رفع الصورة وحفظ الرابط.
+
+### 3. Exports تُحفظ فعلياً
+- **Storage Bucket**: إنشاء bucket `exports` (private) مع RLS (المستخدم يقرأ ملفاته فقط، Admin يقرأ الكل).
+- **`Editor.tsx` بعد التصدير**:
+  1. رفع `Blob` الفيديو إلى `exports/{user_id}/{project_id}_{timestamp}.{ext}`.
+  2. إنشاء صف في جدول `exports` بـ `video_url` و `resolution` و `status='completed'`.
+  3. حالة الفشل: `status='failed'` + رسالة.
+- **صفحة "تصديراتي"** جديدة `/exports`: تعرض السجل من قاعدة البيانات مع زر تنزيل/حذف.
+
+### 4. Google Analytics 4 (مؤجَّل من قبل)
+- إضافة GA4 script في `index.html` مع placeholder للـ Measurement ID.
+- ملف `src/lib/analytics.ts` مع دوال: `trackEvent(name, params)`, `trackPageView(path)`.
+- ربط الأحداث: `sign_up`, `login`, `project_create`, `template_use`, `export_start`, `export_complete`, `scene_add`.
+- **مطلوب من المستخدم**: تزويدنا بـ Measurement ID الفعلي (G-XXXXXXXXXX).
+
+### 5. تفعيل HIBP (حماية كلمات المرور المسرّبة)
+- استدعاء `configure_auth` لتفعيل `password_hibp_enabled: true`.
+
+## التغييرات التقنية باختصار
 
 ```text
-┌──────────────────────────────────┐
-│        React Frontend            │
-│  Landing · Auth · Dashboard      │
-│  Script Editor · Scene Builder   │
-│  Canvas Preview · Export UI      │
-├──────────────────────────────────┤
-│       Supabase Cloud             │
-│  Auth · PostgreSQL · Storage     │
-│  Edge Functions (TTS, Export)    │
-└──────────────────────────────────┘
+Migrations:
+  + INSERT 8 templates (seed)
+  + ALTER profiles ADD preferences jsonb DEFAULT '{}'
+  + CREATE BUCKET avatars (public) + policies
+  + CREATE BUCKET exports (private) + policies (own + admin)
+
+New files:
+  + src/pages/Exports.tsx       (سجل التصديرات)
+  + src/lib/analytics.ts        (GA4 helpers)
+  + src/hooks/useProfile.ts     (قراءة/تحديث profiles)
+
+Modified files:
+  ~ src/pages/Templates.tsx     (Supabase بدل mock)
+  ~ src/pages/Settings.tsx      (حفظ فعلي + رفع avatar + تغيير password)
+  ~ src/pages/Editor.tsx        (رفع للـ Storage + insert في exports)
+  ~ src/components/AppSidebar.tsx (رابط /exports)
+  ~ src/App.tsx                 (route /exports)
+  ~ index.html                  (GA4 snippet)
+
+Auth config:
+  ~ enable HIBP password protection
 ```
 
-## Phase 1 — UI Foundation & Auth
+## ما هو خارج النطاق (للتوضيح)
 
-- **Landing page** with hero section, features overview, CTA
-- **Auth pages** (Login/Signup) via Supabase Cloud (email + Google)
-- **Dashboard** — list user projects, create/delete/rename
-- **Sidebar navigation** — Dashboard, Templates, Settings
-- **Database tables**: `profiles`, `projects`, `templates`, `exports`, `user_roles`
+- **Agents / Machines**: لا توجد في المشروع حالياً. إذا كنت تقصد ميزة جديدة، وضّحها في رسالة منفصلة.
+- **المصادقة**: حقيقية بالفعل، لا تحتاج تغيير.
 
-## Phase 2 — Script Editor & Scene Builder
+## مطلوب منك قبل التنفيذ
 
-- **Rich text editor** — write script organized by scenes (intro, body, outro)
-- **Scene timeline** — visual timeline bar, drag to reorder scenes
-- **Scene settings panel** — duration, background color/image, text style, font, transition type
-- **Scene types**: Title card, Text overlay, Image + caption, Split screen
-
-## Phase 3 — Canvas Preview
-
-- **HTML5 Canvas preview** rendering scenes in real-time in the browser
-- **Text animations** — fade in, typewriter, slide
-- **Transitions** — fade, wipe, slide between scenes
-- **Background media** — solid colors, gradients, uploaded images
-- **Playback controls** — play/pause, scrub timeline, scene navigation
-
-## Phase 4 — Template Library
-
-- **Pre-built templates**: Marketing, Educational, Social Media (Reels/TikTok), Presentation
-- **Template browser** with category filters and preview thumbnails
-- **Apply template** — loads scene structure, colors, fonts, timing into editor
-
-## Phase 5 — Export & AI Integration
-
-- **TTS via Edge Function** — convert script text to speech audio (external API)
-- **Video export** — browser-side rendering for short-form (up to ~3 min)
-- **Export settings** — resolution (720p, 1080p), format
-- **Export history** — track status in `exports` table, download from Supabase Storage
-
-## Database Schema
-
-| Table | Key Columns |
-|---|---|
-| `profiles` | id, user_id (FK auth.users), display_name, avatar_url |
-| `projects` | id, user_id, title, script_json, settings_json, status, thumbnail_url |
-| `templates` | id, name, category, config_json, thumbnail_url, is_premium |
-| `exports` | id, project_id, resolution, status, video_url, created_at |
-| `user_roles` | id, user_id, role (enum: admin, user) |
-
-## Key Routes
-
-| Route | Page |
-|---|---|
-| `/` | Landing page |
-| `/login` | Auth (login/signup) |
-| `/dashboard` | Projects list |
-| `/editor/:id` | Main video editor |
-| `/templates` | Template browser |
-| `/settings` | Account settings |
-
-## Implementation Order
-
-1. Landing page + navigation layout
-2. Auth setup (Supabase Cloud)
-3. Dashboard with project CRUD
-4. Editor page — script input + scene builder UI
-5. Canvas-based scene preview with playback
-6. Template library
-7. TTS integration via Edge Function
-8. Video export (short-form, browser-side)
-
-## Honest Limitations
-
-- **1-hour / 4K videos** require dedicated rendering infrastructure beyond the browser. Initial release supports short-form content (2-3 min) at 720p/1080p.
-- **FFmpeg/WebAssembly** in-browser is limited by memory. Longer videos would need a server-side pipeline added later.
-- Security (JWT, HTTPS, input validation) is handled natively by Supabase Cloud.
-
-## What Gets Built First
-
-I will start with **Phase 1**: Landing page, auth, dashboard, and database setup. This gives you a working app skeleton to build upon incrementally.
+1. **GA4 Measurement ID الفعلي** (أو نضع placeholder ونتركك تستبدله).
+2. تأكيد أن "Agents/Machines" غير مطلوبة الآن.
 
