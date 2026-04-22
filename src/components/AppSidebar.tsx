@@ -1,7 +1,8 @@
-import { LayoutDashboard, Film, Palette, Settings, Play, LogOut } from "lucide-react";
+import { LayoutDashboard, Film, Palette, Settings, Play, LogOut, Shield } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +28,11 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const { isAdmin } = useIsAdmin();
+
+  const items = isAdmin
+    ? [...navItems, { title: "لوحة المدير", url: "/admin", icon: Shield }]
+    : navItems;
 
   const handleSignOut = async () => {
     await signOut();
@@ -48,7 +54,7 @@ export function AppSidebar() {
           <SidebarGroupLabel className="text-sidebar-foreground/50">القائمة</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink

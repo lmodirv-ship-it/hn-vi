@@ -11,6 +11,8 @@ import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
 import Editor from "./pages/Editor";
 import Settings from "./pages/Settings";
+import Admin from "./pages/Admin";
+import AdminRoute from "./components/AdminRoute";
 import DashboardLayout from "./components/DashboardLayout";
 import NotFound from "./pages/NotFound";
 import Install from "./pages/Install";
@@ -36,6 +38,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/templates" element={<Templates />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
             </Route>
             <Route path="/install" element={<Install />} />
             <Route path="*" element={<NotFound />} />
