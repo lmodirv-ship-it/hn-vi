@@ -1,0 +1,25 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "language": "Langue"
+  },
+  "share": {
+    "share": "Partager",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "make_public": "Activer le partage public",
+    "make_private": "Désactiver le partage",
+    "public_on": "Public",
+    "title": "Regardez cette vidéo",
+    "download": "Télécharger",
+    "not_found": "Lien indisponible ou partage désactivé"
+  },
+  "settings": {
+    "language_section": "Langue et région",
+    "language_desc": "Choisissez la langue de l'interface"
+  }
+}
