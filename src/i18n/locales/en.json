@@ -1,0 +1,25 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "error": "Error",
+    "language": "Language"
+  },
+  "share": {
+    "share": "Share",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "make_public": "Enable public sharing",
+    "make_private": "Disable sharing",
+    "public_on": "Public",
+    "title": "Watch this video",
+    "download": "Download",
+    "not_found": "Link unavailable or sharing disabled"
+  },
+  "settings": {
+    "language_section": "Language & Region",
+    "language_desc": "Choose interface language"
+  }
+}

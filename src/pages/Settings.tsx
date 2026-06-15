@@ -4,16 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { User, Mail, Lock, Save, KeyRound, Bell, Palette, Loader2, Camera } from "lucide-react";
+import { User, Mail, Lock, Save, KeyRound, Bell, Palette, Loader2, Camera, Languages } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function Settings() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { profile, loading, updateProfile, uploadAvatar } = useProfile();
+  const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [displayName, setDisplayName] = useState("");
@@ -243,6 +246,20 @@ export default function Settings() {
               <p className="mt-1 text-xs text-muted-foreground">داكن (حالياً الوحيد المدعوم)</p>
             </div>
           </div>
+        </motion.div>
+
+        {/* Language */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }} className="glass-card rounded-2xl p-6">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl gradient-accent shadow-lg shadow-accent/30">
+              <Languages className="h-5 w-5 text-accent-foreground" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold font-['Space_Grotesk']">{t("settings.language_section")}</h2>
+              <p className="text-xs text-muted-foreground">{t("settings.language_desc")}</p>
+            </div>
+          </div>
+          <LanguageSwitcher />
         </motion.div>
       </div>
     </div>

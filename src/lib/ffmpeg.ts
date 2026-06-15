@@ -47,6 +47,13 @@ export const EXPORT_PRESETS: Record<string, ExportOptions> = {
   "1080p": { width: 1920, height: 1080, fps: 30, label: "Full HD 1080p" },
   "1080p60": { width: 1920, height: 1080, fps: 60, label: "Full HD 1080p 60fps" },
   "4k":    { width: 3840, height: 2160, fps: 30, label: "4K Ultra HD" },
+  // Vertical / social platform presets
+  "tiktok":   { width: 1080, height: 1920, fps: 30, label: "TikTok 9:16 (1080×1920)" },
+  "reels":    { width: 1080, height: 1920, fps: 30, label: "Instagram Reels 9:16" },
+  "shorts":   { width: 1080, height: 1920, fps: 30, label: "YouTube Shorts 9:16" },
+  "story":    { width: 1080, height: 1920, fps: 30, label: "Story 9:16" },
+  "square":   { width: 1080, height: 1080, fps: 30, label: "Square 1:1 (Instagram)" },
+  "twitter":  { width: 1280, height: 720,  fps: 30, label: "Twitter / X 16:9" },
 };
 
 export interface SceneData {

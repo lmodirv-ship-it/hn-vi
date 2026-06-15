@@ -17,6 +17,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import NotFound from "./pages/NotFound";
 import Install from "./pages/Install";
 import Exports from "./pages/Exports";
+import Share from "./pages/Share";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
             </Route>
             <Route path="/install" element={<Install />} />
+            <Route path="/share/:token" element={<Share />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

@@ -1,1 +1,4 @@
 project_id = "rwdxnbfcrmztbjqgtplf"
+
+[functions.share-video]
+verify_jwt = false

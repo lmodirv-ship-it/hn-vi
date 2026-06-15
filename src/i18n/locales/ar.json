@@ -1,0 +1,25 @@
+{
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "language": "اللغة"
+  },
+  "share": {
+    "share": "مشاركة",
+    "copy": "نسخ الرابط",
+    "copied": "تم نسخ الرابط",
+    "make_public": "تفعيل المشاركة العامة",
+    "make_private": "إيقاف المشاركة",
+    "public_on": "متاح للعموم",
+    "title": "شاهد هذا الفيديو",
+    "download": "تنزيل",
+    "not_found": "الرابط غير متاح أو تم إيقاف المشاركة"
+  },
+  "settings": {
+    "language_section": "اللغة والمنطقة",
+    "language_desc": "اختر لغة الواجهة"
+  }
+}
