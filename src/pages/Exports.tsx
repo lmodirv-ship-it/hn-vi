@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Trash2, Film, Loader2, Clock } from "lucide-react";
+import { Download, Trash2, Film, Loader2, Clock, Share2, Globe, Lock, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface ExportRow {
   id: string;
@@ -14,13 +15,17 @@ interface ExportRow {
   resolution: string | null;
   video_url: string | null;
   created_at: string;
+  is_public?: boolean | null;
+  share_token?: string | null;
 }
 
 export default function Exports() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [items, setItems] = useState<ExportRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     if (!user) return;
@@ -65,6 +70,43 @@ export default function Exports() {
     } catch (e: any) {
       toast({ title: "خطأ", description: e.message, variant: "destructive" });
     }
+  };
+
+  const genToken = () =>
+    crypto.randomUUID().replace(/-/g, "") + Math.random().toString(36).slice(2, 8);
+
+  const togglePublic = async (row: ExportRow) => {
+    setBusyId(row.id);
+    try {
+      const next = !row.is_public;
+      const token = row.share_token || genToken();
+      const { error } = await supabase
+        .from("exports")
+        .update({ is_public: next, share_token: token })
+        .eq("id", row.id);
+      if (error) throw error;
+      setItems((prev) =>
+        prev.map((x) => (x.id === row.id ? { ...x, is_public: next, share_token: token } : x)),
+      );
+      if (next) {
+        const url = `${window.location.origin}/share/${token}`;
+        await navigator.clipboard.writeText(url).catch(() => {});
+        toast({ title: t("share.copied"), description: url });
+      } else {
+        toast({ title: t("share.make_private") });
+      }
+    } catch (e: any) {
+      toast({ title: t("common.error"), description: e.message, variant: "destructive" });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const copyShareLink = async (row: ExportRow) => {
+    if (!row.share_token) return;
+    const url = `${window.location.origin}/share/${row.share_token}`;
+    await navigator.clipboard.writeText(url);
+    toast({ title: t("share.copied"), description: url });
   };
 
   const fmt = (d: string) => new Date(d).toLocaleString("ar-EG");
@@ -112,9 +154,32 @@ export default function Exports() {
                 </div>
               </div>
               {row.status === "completed" && row.video_url && (
-                <Button size="sm" variant="outline" onClick={() => handleDownload(row)}>
-                  <Download className="ml-2 h-4 w-4" />تنزيل
-                </Button>
+                <>
+                  <Button
+                    size="sm"
+                    variant={row.is_public ? "default" : "outline"}
+                    disabled={busyId === row.id}
+                    onClick={() => togglePublic(row)}
+                    className={row.is_public ? "gradient-primary border-0 text-primary-foreground" : ""}
+                  >
+                    {busyId === row.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : row.is_public ? (
+                      <Globe className="ml-2 h-4 w-4" />
+                    ) : (
+                      <Share2 className="ml-2 h-4 w-4" />
+                    )}
+                    {row.is_public ? t("share.public_on") : t("share.share")}
+                  </Button>
+                  {row.is_public && row.share_token && (
+                    <Button size="sm" variant="ghost" onClick={() => copyShareLink(row)}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button size="sm" variant="outline" onClick={() => handleDownload(row)}>
+                    <Download className="ml-2 h-4 w-4" />تنزيل
+                  </Button>
+                </>
               )}
               <Button size="sm" variant="ghost" onClick={() => handleDelete(row)}>
                 <Trash2 className="h-4 w-4 text-destructive" />
