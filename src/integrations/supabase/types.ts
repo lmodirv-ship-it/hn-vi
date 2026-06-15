@@ -18,8 +18,10 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_public: boolean
           project_id: string
           resolution: string | null
+          share_token: string | null
           status: string | null
           user_id: string
           video_url: string | null
@@ -27,8 +29,10 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          is_public?: boolean
           project_id: string
           resolution?: string | null
+          share_token?: string | null
           status?: string | null
           user_id: string
           video_url?: string | null
@@ -36,8 +40,10 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          is_public?: boolean
           project_id?: string
           resolution?: string | null
+          share_token?: string | null
           status?: string | null
           user_id?: string
           video_url?: string | null
